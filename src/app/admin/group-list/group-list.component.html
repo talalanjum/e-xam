@@ -1,0 +1,42 @@
+<div class="card">
+    <div class="card-body">
+        
+        <h4 class="card-title">Group List
+        </h4>
+        <mat-form-field>
+            <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
+        </mat-form-field>
+
+        <table mat-table [dataSource]="dataSource" class="col-md-12">
+
+            <!-- Position Column -->
+            <ng-container matColumnDef="position">
+                <th mat-header-cell *matHeaderCellDef> No. </th>
+                <td mat-cell *matCellDef="let element"> {{element.position}} </td>
+            </ng-container>
+
+            <!-- Name Column -->
+            <ng-container matColumnDef="name">
+                <th mat-header-cell *matHeaderCellDef> Group Name </th>
+                <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+            </ng-container>
+
+            <!-- Symbol Column -->
+            <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef> Actions </th>
+                <td mat-cell *matCellDef="let element">
+                    <i class="fas fa-user-edit p-1 text-success" (click)="openEdit(editmodal, element.id)"
+                        placement="bottom" ngbTooltip="Edit Group"></i>
+                    <i class="fas fa-trash text-danger" (click)="deleteGroup(element.id)" placement="bottom"
+                        ngbTooltip="Delete Group"></i>
+                    <i class="fas fa-info-circle p-1 text-primary" (click)="navigateGroup(element.name)"
+                        placement="bottom" ngbTooltip="Group Details"></i>
+                </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr class="rowhover" mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+    </div>
+
+</div>

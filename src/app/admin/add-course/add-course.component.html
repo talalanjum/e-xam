@@ -1,0 +1,126 @@
+<div class="row">
+    <div class="col-12 grid-margin">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">Add New Course</h4>
+                <form [formGroup]="form" class="form-sample" #f="ngForm" (ngSubmit)="addCourse(f.value)">
+                    <p class="card-description">
+                        Enter Course details
+                    </p>
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">Course Code</label>
+                                <div class="col-sm-9">
+                                    <input formControlName="course_code" type="text" id="regno" class="form-control" />
+                                    <div class="alert alert-danger" *ngIf="course_code.touched && course_code.invalid">
+                                        <div *ngIf="course_code.errors.required">Course Code is required</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-5 offset-1">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">Course Name</label>
+                                <div class="col-sm-9">
+                                    <input formControlName="title" type="text" class="form-control" />
+                                    <div class="alert alert-danger" *ngIf="title.touched && title.invalid">
+                                        <div *ngIf="title.errors.required">Title is required</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">Credit Hours</label>
+                                <div class="col-sm-9">
+                                    <input formControlName="credit_hours" type="number" class="form-control">
+                                    <div class="alert alert-danger"
+                                        *ngIf="credit_hours.touched && credit_hours.invalid">
+                                        <div *ngIf="credit_hours.errors.required">Credit Hours are required</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">Class
+                                    <span class="offset-1" (click)="addClass(addclass)"><i
+                                            class="fas fa-plus add-icon"></i></span>
+                                </label>
+                                <ng-container *ngIf="class.controls[0]; else add_class" formArrayName="class_name">
+                                    <div class="col-sm-9">
+                                        <ng-container *ngFor="let cls of class.controls; let i = index">
+                                            <div class="pb-2" style="display: -webkit-inline-box;">
+                                                <ng-container [formGroupName]="i">
+                                                    <input [formControl]="cls" type="text" #addclass
+                                                        class="form-control">
+                                                    <span class="pl-2" (click)="removeClass(cls)"><i
+                                                            class="fas fa-trash del-icon"></i></span>
+                                                </ng-container>
+                                            </div>
+                                            <div class="alert alert-danger"
+                                                *ngIf="cls.invalid && cls.touched">
+                                                <div *ngIf="cls.errors.required">Class is
+                                                    required
+                                                </div>
+                                            </div>
+                                        </ng-container>
+                                    </div>
+                                </ng-container>
+                                <ng-template #add_class>
+                                    <div class="alert alert-danger">
+                                        Must add at least one class
+                                    </div>
+                                </ng-template>
+                            </div>
+                        </div>
+                        <div class="col-md-5 offset-1">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">CLOs
+                                    <span class="offset-1" (click)="addCLO(addclo)"><i
+                                            class="fas fa-plus add-icon"></i></span>
+                                </label>
+                                <ng-container *ngIf="CLOs.controls[0]; else add_clo" formArrayName="CLO">
+                                    <div class="col-sm-9">
+                                        <ng-container [formGroupName]="i"
+                                            *ngFor="let clo of CLOs.controls; let i = index">
+                                            <div class="pb-2" style="display: -webkit-inline-box;">
+                                                <input [formControl]="clo"  type="text" #addclo class="form-control">
+                                                <span class="pl-2" (click)="removeCLO(clo)"><i
+                                                        class="fas fa-trash del-icon"></i></span>
+                                            </div>
+                                            <div class="alert alert-danger"
+                                                *ngIf="clo.invalid && clo.touched">
+                                                <div *ngIf="clo.errors.required">CLO is required
+                                                </div>
+                                            </div>
+                                        </ng-container>
+                                    </div>
+                                </ng-container>
+                                <ng-template #add_clo>
+                                    <div class="alert alert-danger">
+                                        Must add at least one CLO
+                                    </div>
+                                </ng-template>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 offset-6">
+                            <div class="form-group row offset-9">
+                                <button
+                                    [disabled]="((this.CLOs.controls[0] && this.class.controls[0]) && f.valid) ? false : true"
+                                    type="submit" class="btn btn-primary btn-rounded btn-fw">Add Course</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

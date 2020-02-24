@@ -1,0 +1,277 @@
+<div class="col-lg-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <h4 class="card-title col-md-2">Student List for
+                </h4>
+                <div class="col-md-4 card-title">
+                    <select (change)="updateList($event.target.value)" class="form-control">
+                        <option disabled selected>Select Batch</option>
+                        <option class="form-control" *ngFor="let batch of batches" [value]="batch">
+                            {{batch}}
+                        </option>
+                    </select>
+                </div>
+            </div>
+            <mat-form-field>
+                <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
+            </mat-form-field>
+
+            <table mat-table [dataSource]="dataSource" class="col-md-12">
+
+                <!-- Position Column -->
+                <ng-container matColumnDef="position">
+                    <th mat-header-cell *matHeaderCellDef> No. </th>
+                    <td mat-cell *matCellDef="let element"> {{element.position}} </td>
+                </ng-container>
+
+                <!-- Name Column -->
+                <ng-container matColumnDef="registration_number">
+                    <th mat-header-cell *matHeaderCellDef> Registration Number </th>
+                    <td mat-cell *matCellDef="let element"> {{element.registration_number}} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="name">
+                    <th mat-header-cell *matHeaderCellDef> Name </th>
+                    <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="department">
+                    <th mat-header-cell *matHeaderCellDef> Department </th>
+                    <td mat-cell *matCellDef="let element"> {{element.department}} </td>
+                </ng-container>
+
+                <!-- Symbol Column -->
+                <ng-container matColumnDef="actions">
+                    <th mat-header-cell *matHeaderCellDef> Actions </th>
+                    <td mat-cell *matCellDef="let element">
+                        <i class="fas fa-user-edit p-1 text-success"
+                            (click)="openEdit(editmodal, element.registration_number)" placement="bottom"
+                            ngbTooltip="Edit Student"></i>
+                        <i class="fas fa-trash text-danger" (click)="deleteStudent(element.registration_number)"
+                            placement="bottom" ngbTooltip="Delete Student"></i>
+                        <i class="fas fa-info-circle p-1 text-primary"
+                            (click)="openDetails(detailsmodal,element.registration_number)" placement="bottom"
+                            ngbTooltip="Edit Student"></i>
+                    </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                
+            </table>
+            <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+        </div>
+    </div>
+
+    <div class="modal-lg">
+        <ng-template class="modal-lg" #detailsmodal let-modal>
+            <div class="modal-header">
+                <!-- <h4 class="modal-title" id="modal-basic-title">Details for {{studentData.name}}</h4> -->
+                <h4 class="modal-title" id="modal-basic-title">Details for student</h4>
+                <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body m-3">
+                <div>
+                    <p>Registration Number: {{studentData.registration_number}}</p>
+                    <p>Name: {{studentData.name}}</p>
+                    <p>Contact: {{studentData.contact}}</p>
+                    <p>Batch: {{studentData.batch}}</p>
+                    <p>Email: {{studentData.email}}</p>
+                    <p>Address: {{studentData.address}}</p>
+                    <p>Department: {{studentData.department}}</p>
+                    <p>Joining Date: {{studentData.joining_date}}</p>
+                    <p>Semester: {{studentData.semester}}</p>
+                    <p style="display: inline;">Courses: </p>
+                    <p *ngFor="let course of studentData.courses" style="display: inline;">{{course}}, </p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" (click)="modal.close('Save click')">Close</button>
+            </div>
+        </ng-template>
+    </div>
+    <div class="modal-lg">
+        <ng-template class="modal-lg" #editmodal let-modal>
+            <div class="modal-header">
+                <h4 class="modal-title" id="modal-basic-title">Details for Student</h4>
+                <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form class="form-sample" #f="ngForm" [formGroup]="form" (ngSubmit)="updateStudent(f.value)">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">Registration Number</label>
+                                <div class="col-sm-9">
+                                    <input [(ngModel)]="studentData.registration_number" formControlName="regno"
+                                        type="text" id="regno" class="form-control" />
+                                    <div *ngIf="regno.invalid && regno.touched" class="alert alert-danger">
+                                        <div *ngIf="regno.errors.required">Registration Number is required</div>
+                                        <div *ngIf="regno.errors.regexmatch">Registration Number must be of the form
+                                            "FA/SP-DEPT-ROLLNO"</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">Semester</label>
+                                <div class="col-sm-9">
+                                    <select [(ngModel)]="studentData.semester" formControlName="semester"
+                                        class="form-control">
+                                        <option value=1>1st</option>
+                                        <option value=2>2nd</option>
+                                        <option value=3>3rd</option>
+                                        <option value=4>4th</option>
+                                        <option value=5>5th</option>
+                                        <option value=6>6th</option>
+                                        <option value=7>7th</option>
+                                        <option value=8>8th</option>
+                                    </select>
+                                    <div *ngIf="semester.invalid && semester.touched" class="alert alert-danger">
+                                        Semester is requied
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">Name</label>
+                                <div class="col-sm-9">
+                                    <input [(ngModel)]="studentData.name" value={{studentData.name}}
+                                        formControlName="name" type="text" class="form-control">
+                                    <div *ngIf="name.invalid && name.touched" class="alert alert-danger">
+                                        Name is required
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">Batch</label>
+                                <div class="col-sm-9">
+                                    <select [(ngModel)]="studentData.batch" formControlName="batch"
+                                        class="form-control">
+                                        <option class="form-control" *ngFor="let battch of batches"
+                                            [value]="battch">{{battch}}</option>
+                                    </select>
+                                    <div *ngIf="batch.invalid && batch.touched " class="alert alert-danger">
+                                        Batch is required
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">Contact</label>
+                                <div class="col-sm-9">
+                                    <input [(ngModel)]="studentData.contact" formControlName="contact" type="text"
+                                        class="form-control" />
+                                    <div *ngIf="contact.invalid && contact.touched" class="alert alert-danger">
+                                        <div *ngIf="contact.errors.required">Contact is required</div>
+                                        <div *ngIf="contact.errors.contactcheck">Enter Valid contact</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">Email</label>
+                                <div class="col-sm-9">
+                                    <input [(ngModel)]="studentData.email"
+                                        formControlName="email" type="email" class="form-control" />
+                                    <div *ngIf="email.invalid && email.touched" class="alert alert-danger">
+                                        <div *ngIf="email.errors.required">Email is required</div>
+                                        <div *ngIf="email.errors.email">Please enter valid email</div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">Address</label>
+                                <div class="col-sm-9">
+                                    <input [(ngModel)]="studentData.address" 
+                                        formControlName="address" type="text" class="form-control" />
+                                    <div *ngIf="address.invalid && address.touched" class="alert alert-danger">
+                                        Address is required
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">Department</label>
+                                <div class="col-sm-9">
+                                    <select [(ngModel)]="studentData.department" formControlName="department"
+                                        class="form-control">
+                                        <option class="form-control" *ngFor="let dept of departments" [value]="dept">{{dept}}</option>
+                                    </select>
+                                    <div *ngIf="department.invalid && department.touched" class="alert alert-danger">
+                                        Department is required
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">Joining Date</label>
+                                <div class="col-sm-9">
+                                    <input [(ngModel)]="studentData.joining_date"
+                                        formControlName="joining_date" type="date" class="form-control" />
+                                    <div *ngIf="joining_date.invalid && joining_date.touched" class="alert alert-danger">
+                                        Date is required
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <!-- <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">Courses</label>
+                                <div class="offset-0">
+                                    <div class="col-sm-9">
+                                        <ng-container *ngFor="let course of getCourseFormControls">
+                                            <mat-checkbox [(ngModel)]="checkedcourse" *ngFor="let course of courses"
+                                                [checked]="checked" [value]="course">
+                                                {{course}}
+                                            </mat-checkbox>
+                                        </ng-container>
+                                    </div>
+                                </div>
+                            </div> -->
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 offset-6">
+                            <div class="form-group row offset-9">
+                                <button [disabled]="!f.valid" type="submit"
+                                    class="btn btn-primary btn-rounded btn-fw">Update Student</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" (click)="modal.close('Save click')">Close</button>
+            </div>
+        </ng-template>
+    </div>
+
+</div>

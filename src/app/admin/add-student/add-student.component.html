@@ -1,0 +1,197 @@
+<div class="row">
+        <div class="col-12 grid-margin">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Add New Student</h4>
+                    <form class="form-sample" #f="ngForm" [formGroup]="form" (ngSubmit)="addStudent(f.value)">
+                        <p class="card-description">
+                            Enter Student details
+                        </p>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Registration Number</label>
+                                    <div class="col-sm-9">
+                                        <input formControlName="regno" type="text" id="regno"
+                                            class="form-control" />
+                                        <div *ngIf="regno.invalid && regno.touched" class="alert alert-danger">
+                                            <div *ngIf="regno.errors.required">Registration Number is required
+                                            </div>
+                                            <div *ngIf="regno.errors.regexmatch">Registration Number must be of
+                                                the form
+                                                "FA/SP-DEPT-ROLLNO"</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Password</label>
+                                    <div class="col-sm-9">
+                                        <input formControlName="password" type="password"
+                                            class="form-control" />
+                                        <div *ngIf="password.invalid && password.touched"
+                                            class="alert alert-danger">
+                                            <div *ngIf="password.errors.required">Password is required</div>
+                                            <div *ngIf="password.errors.cannotContainSpace">Password cannot
+                                                contain space
+                                            </div>
+                                            <div *ngIf="password.errors.minlength">Password must be of minimum 8
+                                                characters
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Name</label>
+                                    <div class="col-sm-9">
+                                        <input formControlName="name" type="text" class="form-control">
+                                        <div *ngIf="name.invalid && name.touched" class="alert alert-danger">
+                                            Name is required
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Batch</label>
+                                    <div class="col-sm-9">
+                                        <select formControlName="batch" class="form-control">
+                                            <option *ngFor="let batch of batches" [value]="batch">{{batch}}
+                                            </option>
+                                        </select>
+                                        <div *ngIf="batch.invalid && batch.touched " class="alert alert-danger">
+                                            Batch is requied
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Contact</label>
+                                    <div class="col-sm-9">
+                                        <input formControlName="contact" type="text" class="form-control" />
+                                        <div *ngIf="contact.invalid && contact.touched"
+                                            class="alert alert-danger">
+                                            <div *ngIf="contact.errors.required">Contact is required</div>
+                                            <div *ngIf="contact.errors.contactcheck">Enter Valid contact</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Email</label>
+                                    <div class="col-sm-9">
+                                        <input formControlName="email" type="email" class="form-control" />
+                                        <div *ngIf="email.invalid && email.touched" class="alert alert-danger">
+                                            <div *ngIf="email.errors.required">Email is required</div>
+                                            <div *ngIf="email.errors.email">Please enter valid email</div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Address</label>
+                                    <div class="col-sm-9">
+                                        <input formControlName="address" type="text" class="form-control" />
+                                        <div *ngIf="address.invalid && address.touched"
+                                            class="alert alert-danger">
+                                            Address is required
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Department</label>
+                                    <div class="col-sm-9">
+                                        <select formControlName="department" class="form-control">
+                                            <option *ngFor="let dept of departments" [value]="dept">{{dept}}
+                                            </option>
+                                        </select>
+                                        <div *ngIf="department.invalid && department.touched"
+                                            class="alert alert-danger">
+                                            Department is required
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Joining Date</label>
+                                    <div class="col-sm-9">
+                                        <input formControlName="joining_date" type="date" class="form-control" />
+                                        <div *ngIf="joining_date.invalid && joining_date.touched" class="alert alert-danger">
+                                            Date is required
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Semester</label>
+                                    <div class="col-sm-9">
+                                        <select formControlName="semester" class="form-control">
+                                            <option value = 1>1st</option>
+                                            <option value = 2>2nd</option>
+                                            <option value = 3>3rd</option>
+                                            <option value = 4>4th</option>
+                                            <option value = 5>5th</option>
+                                            <option value = 6>6th</option>
+                                            <option value = 7>7th</option>
+                                            <option value = 8>8th</option>
+                                        </select>
+                                        <div *ngIf="semester.invalid && semester.touched"
+                                            class="alert alert-danger">
+                                            Semester is requied
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Courses</label>
+                                    <div class="offset-0">
+                                        <div class="col-sm-9">
+                                            <mat-checkbox [formGroup]="form" *ngFor="let course of courses"
+                                                [checked]="checked" [value]="course"
+                                                (change)="oncheckchange($event)">
+                                                {{course}}
+                                            </mat-checkbox>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 offset-6">
+                                <div class="form-group row offset-9">
+                                    <button [disabled]="!f.valid" type="submit"
+                                        class="btn btn-primary btn-rounded btn-fw">Add Student</button>
+                                </div>
+                            </div>
+                            <div *ngIf="dataposted" class="alert alert-fill-success col-md-12" role="alert">
+                                <i class="mdi mdi-alert-circle"></i>
+                                Student Added Successfully!
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>  

@@ -1,0 +1,140 @@
+<div class="row">
+    <div class="col-12 grid-margin">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">Add New Teacher</h4>
+                <form class="form-sample" [formGroup]="form" #f="ngForm" (ngSubmit)="addTeacher(f.value)">
+                    <p class="card-description">
+                        Enter Teacher details
+                    </p>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">Faculty Number</label>
+                                <div class="col-sm-9">
+                                    <input formControlName="user_id" type="text" class="form-control" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">Password</label>
+                                <div class="col-sm-9">
+                                    <input formControlName="password" type="password" class="form-control" />
+                                    <!-- <div *ngIf="password.invalid && password.touched"
+                                        class="alert alert-danger">
+                                        <div *ngIf="password.errors.required">Password is required</div>
+                                        <div *ngIf="password.errors.cannotContainSpace">Password cannot
+                                            contain space
+                                        </div>
+                                        <div *ngIf="password.errors.minlength">Password must be of minimum 8
+                                            characters
+                                        </div>
+                                    </div> -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">Name</label>
+                                <div class="col-sm-9">
+                                    <input formControlName="name" type="text" class="form-control">
+                                    <!-- <div *ngIf="name.invalid && name.touched" class="alert alert-danger">
+                                        Name is required
+                                    </div> -->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">Contact</label>
+                                <div class="col-sm-9">
+                                    <input formControlName="contact" type="text" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">Email</label>
+                                <div class="col-sm-9">
+                                    <input formControlName="email" type="email" class="form-control" />
+                                    <!-- <div *ngIf="email.invalid && email.touched" class="alert alert-danger">
+                                        <div *ngIf="email.errors.required">Email is required</div>
+                                        <div *ngIf="email.errors.email">Please enter valid email</div>
+                                    </div> -->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">Joining Date</label>
+                                <div class="col-sm-9">
+                                    <input formControlName="joining_date" type="date" class="form-control" />
+                                    <!-- <div *ngIf="date.invalid && date.touched" class="alert alert-danger">
+                                        Date is required
+                                    </div> -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">Address</label>
+                                <div class="col-sm-9">
+                                    <textarea formControlName="address" type="text" class="form-control" rows="4"></textarea>
+                                    <!-- <div *ngIf="address.invalid && address.touched"
+                                        class="alert alert-danger">
+                                        Address is required
+                                    </div> -->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">Department</label>
+                                <div class="col-sm-9">
+                                    <select formControlName="department" class="form-control">
+                                        <option *ngFor="let dept of departments" [value]="dept">{{dept}}
+                                        </option>
+                                    </select>
+                                    <!-- <div *ngIf="department.invalid && department.touched" class="alert alert-danger">
+                                        Department is required
+                                    </div> -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">Courses</label>
+                                <div class="offset-0">
+                                    <div class="col-sm-9">
+                                        <mat-checkbox [formGroup]="form" *ngFor="let course of courseArray"
+                                            [checked]="checked" [value]="course"
+                                            (change)="oncheckchange($event)">
+                                            {{course}}
+                                        </mat-checkbox>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 offset-6">
+                            <div class="form-group row offset-9">
+                                <button [disabled]="!f.valid" type="submit"
+                                    class="btn btn-primary btn-rounded btn-fw">Add Teacher</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
