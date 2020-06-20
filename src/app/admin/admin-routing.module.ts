@@ -1,3 +1,5 @@
+import { AddGroupMembersComponent } from './add-group-members/add-group-members.component';
+
 import { GroupDetailsComponent } from './group-details/group-details.component';
 import { SettingsComponent } from './settings/settings.component';
 import { CreateGroupComponent } from './create-group/create-group.component';
@@ -32,6 +34,7 @@ const routes: Routes = [
         { path: 'manage_groups/add', component: CreateGroupComponent },
         { path: 'manage_groups/listall', component: GroupListComponent },
         { path: 'manage_groups/details', component: GroupDetailsComponent },
+        { path: 'manage_groups/addmembers', component: AddGroupMembersComponent },
         { path: 'manage_groups/', redirectTo: "/admin/manage_groups/listall", pathMatch: 'full' },
         { path: 'settings', component: SettingsComponent },
 

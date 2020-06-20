@@ -1,5 +1,7 @@
 <div class="card">
     <div class="card-body">
+        <h4 class="card-title">Course List
+        </h4>
         <mat-form-field>
             <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
         </mat-form-field>
@@ -31,10 +33,10 @@
             <!-- Symbol Column -->
             <ng-container matColumnDef="actions">
                 <th mat-header-cell *matHeaderCellDef> Actions </th>
-                <td mat-cell *matCellDef="let element">
+                <td mat-cell *matCellDef="let element; let j = index">
                     <i class="fas fa-user-edit p-1 text-success" (click)="openEdit(editmodal, element.course_code)"
                         placement="bottom" ngbTooltip="Edit Course"></i>
-                    <i class="fas fa-trash text-danger" (click)="deleteCourse(element.course_code)" placement="bottom"
+                    <i class="fas fa-trash text-danger" (click)="deleteCourse(element.course_code,j)" placement="bottom"
                         ngbTooltip="Delete Course"></i>
                     <i class="fas fa-info-circle p-1 text-primary"
                         (click)="openDetails(detailsmodal,element.course_code)" placement="bottom"
@@ -45,6 +47,7 @@
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
             <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
         </table>
+        <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
     </div>
 
     <div class="modal-lg">
@@ -57,19 +60,18 @@
             </div>
             <div class="modal-body m-3">
                 <div>
-                    <p>Faculty ID: {{courseData.course_code}}</p>
+                    <p>Course Code: {{courseData.course_code}}</p>
                     <p>Title: {{courseData.title}}</p>
                     <p>Credit hours: {{courseData.credit_hours}}</p>
+                    <p>Department: {{courseData.department}}</p>
+                    <p>CLOs: </p>
                     <ul *ngFor="let clo of courseData.CLO" class="offset-2">
-                        <li style="font-size: 12px !important;">CLO: {{clo}}</li>
+                        <li style="font-size: 12px !important;">{{clo}}</li>
                     </ul>
+                    <p>Class: </p>
                     <ul *ngFor="let cls of courseData.class" class="offset-2">
-                        <li style="font-size: 12px !important;">Class:
-                            {{cls}}</li>
+                        <li style="font-size: 12px !important;">{{cls}}</li>
                     </ul>
-                    <!-- <p  style="display: inline;">
-                         <br>
-                    </p> -->
                 </div>
             </div>
             <div class="modal-footer">
@@ -94,33 +96,22 @@
                     <div class="row">
                         <div class="col-md-5">
                             <div class="form-group row">
-                                <label class="col-sm-3 col-form-label">Course Code</label>
+                                <label class="col-sm-3 col-form-label">Title</label>
                                 <div class="col-sm-9">
-                                    <input formControlName="course_code" type="text" id="regno" class="form-control" />
-                                    <div class="alert alert-danger" *ngIf="course_code.touched && course_code.invalid">
-                                        <div *ngIf="course_code.errors.required">Course Code is required</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-5 offset-1">
-                            <div class="form-group row">
-                                <label class="col-sm-3 col-form-label">Course Name</label>
-                                <div class="col-sm-9">
-                                    <input formControlName="title" type="text" class="form-control" />
+                                    <input [(ngModel)]="courseData.title" formControlName="title" type="text"
+                                        class="form-control">
                                     <div class="alert alert-danger" *ngIf="title.touched && title.invalid">
                                         <div *ngIf="title.errors.required">Title is required</div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="row">
                         <div class="col-md-5">
                             <div class="form-group row">
                                 <label class="col-sm-3 col-form-label">Credit Hours</label>
                                 <div class="col-sm-9">
-                                    <input formControlName="credit_hours" type="number" class="form-control">
+                                    <input [(ngModel)]="courseData.credit_hours" formControlName="credit_hours"
+                                        type="number" class="form-control">
                                     <div class="alert alert-danger"
                                         *ngIf="credit_hours.touched && credit_hours.invalid">
                                         <div *ngIf="credit_hours.errors.required">Credit Hours are required</div>
@@ -147,8 +138,7 @@
                                                             class="fas fa-trash del-icon"></i></span>
                                                 </ng-container>
                                             </div>
-                                            <div class="alert alert-danger"
-                                                *ngIf="cls.invalid && cls.touched">
+                                            <div class="alert alert-danger" *ngIf="cls.invalid && cls.touched">
                                                 <div *ngIf="cls.errors.required">Class is
                                                     required
                                                 </div>
@@ -163,7 +153,7 @@
                                 </ng-template>
                             </div>
                         </div>
-                        <div class="col-md-5 offset-1">
+                        <div class="col-md-5">
                             <div class="form-group row">
                                 <label class="col-sm-3 col-form-label">CLOs
                                     <span class="offset-1" (click)="addCLO(addclo)"><i
@@ -174,12 +164,11 @@
                                         <ng-container [formGroupName]="i"
                                             *ngFor="let clo of CLOs.controls; let i = index">
                                             <div class="pb-2" style="display: -webkit-inline-box;">
-                                                <input [formControl]="clo"  type="text" #addclo class="form-control">
+                                                <input [formControl]="clo" type="text" #addclo class="form-control">
                                                 <span class="pl-2" (click)="removeCLO(clo)"><i
                                                         class="fas fa-trash del-icon"></i></span>
                                             </div>
-                                            <div class="alert alert-danger"
-                                                *ngIf="clo.invalid && clo.touched">
+                                            <div class="alert alert-danger" *ngIf="clo.invalid && clo.touched">
                                                 <div *ngIf="clo.errors.required">CLO is required
                                                 </div>
                                             </div>
@@ -195,11 +184,26 @@
                         </div>
                     </div>
                     <div class="row">
+                        <div class="col-md-5">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">Departments</label>
+                                <div class="col-sm-9">
+                                    <mat-checkbox *ngFor="let dept of departments" [checked]="dept.checked"
+                                        [value]="dept.name" (change)="oncheckchange($event)">
+                                        {{dept.name}}
+                                    </mat-checkbox>
+                                    <div class="alert-danger alert" *ngIf="!department.controls[0]">Department is
+                                        required</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
                         <div class="col-md-6 offset-6">
                             <div class="form-group row offset-9">
                                 <button
                                     [disabled]="((this.CLOs.controls[0] && this.class.controls[0]) && f.valid) ? false : true"
-                                    type="submit" class="btn btn-primary btn-rounded btn-fw">Add Course</button>
+                                    type="submit" class="btn btn-primary btn-rounded btn-fw">Update Course</button>
                             </div>
                         </div>
                     </div>

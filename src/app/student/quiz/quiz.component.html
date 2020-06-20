@@ -1,0 +1,98 @@
+<div class="row m-0 pt-3 pr-3 pl-3">
+    <div class="col-md-6">
+        <h3 class="mat-h1">Quiz No. {{quiz.quizNo}}</h3>
+    </div>
+    <div class="col-md-6 justify-content-end">
+        <countdown-timer (zeroTrigger)="timerEnd()" class="pt-2 mat-h2 float-right" style="color:black;" [end]="quizTimer">
+        </countdown-timer>
+        <span class="mat-h2 pr-2 pt-2 float-right">
+            Time left:
+        </span>
+    </div>
+</div>
+
+<div class="p-2 m-4 mat-elevation-z5">
+    <div class="row">
+        <div class="col-md-6">
+            <span class="pl-4 pt-2">
+                <b class="mt-2">
+                    Question No. {{currentData.number}}
+                </b>
+            </span>
+        </div>
+        <div class="col-md-6 text-right">
+            <button mat-button class="btn btn-primary mr-2" (click)="prevDiv()" [disabled]="disablePrev">
+                <i class="fa fa-chevron-left"></i>
+            </button>
+            <button mat-button class="btn btn-primary mr-2" (click)="nextDiv()" [disabled]="disableNext">
+                <i class="fa fa-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+    <div class="border border-black text-left mt-2 mb-2">
+        <div class="text-right row">
+            <span class="pl-4 pt-2">
+                <b class="mt-2">
+                    {{currentData.question}}
+                </b>
+            </span>
+        </div>
+        <br>
+    </div>
+    <div class="border border-black text-left mt-2 mb-2">
+        <div class="text-right row">
+            <span class="pl-4 pt-2">
+                <b class="mt-2">
+                    Answer:
+                </b>
+            </span>
+        </div>
+        <div *ngIf="currentData.type=='question/Answer'" class="row col-sm-12">
+            <textarea name="" id="" rows="10" class="form-control ml-2 mt-2 col-sm-12"></textarea>
+        </div>
+        <div *ngIf="currentData.type=='mcq'" class="row col-sm-12">
+            <label class="radio-inline pl-2 pt-4 mr-5" *ngFor="let choice of currentData.choices">
+                <input type="radio" name="optradio">{{choice}}
+            </label>
+        </div>
+        <div *ngIf="currentData.type=='trueFalse'" class="row col-sm-12">
+            <label class="radio-inline pl-2 pt-4 mr-5" *ngFor="let choice of currentData.choices">
+                <input type="radio" name="optradio">{{choice}}
+            </label>
+        </div>
+        <br>
+    </div>
+    <div class="row col-md-12" style="margin: 0px !important;">
+        <!-- <div class="text-left"> -->
+        <div class="col-md-6" style="padding: 0px !important;">
+            <button mat-button class="btn btn-primary" (click)="submitAnswer()">
+                Submit Exam
+            </button>
+        </div>
+        <!-- </div> -->
+        <!-- <div class="text-right offset-6"> -->
+        <div class="col-md-6 justify-content-end" style="padding: 0px !important;">
+            <button mat-button class="btn btn-primary float-right" (click)="submitAnswer()">
+                Submit Answer
+            </button>
+            <div ngbDropdown class="d-inline-block float-right mr-2">
+                <button class="btn btn-primary" type="button" id="dropdownMenuButton1" ngbDropdownToggle>
+                    Jump to:
+                </button>
+                <div ngbDropdownMenu aria-labelledby="dropdownMenuButton1">
+                    <h6 class="dropdown-header">Question No.</h6>
+                    <a (click)="changeQuestion(question.number)" class="dropdown-item" *ngFor="let question of quizDataArray">{{question.number}}</a>
+                </div>
+            </div>
+        </div>
+        <!-- </div> -->
+    </div>
+</div>
+
+
+
+
+
+
+<!-- wow you do everything so well I am so proud of you <3 
+ -->

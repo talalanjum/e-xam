@@ -1,3 +1,4 @@
+import { GetDataService } from './../../services/get-data.service';
 import { CourseService } from './../../services/admin-services/course.service';
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators, FormArray, Form } from '@angular/forms';
@@ -11,9 +12,11 @@ export class AddCourseComponent implements OnInit {
 
   forminvalid: boolean
   constructor(
-    private courseService: CourseService
+    private courseService: CourseService,
+    private getdataservice: GetDataService
   ) { }
-
+  
+  departments = []
   ngOnInit() {
     this.CLOs.push(
       new FormControl('' ,Validators.required)
@@ -26,6 +29,13 @@ export class AddCourseComponent implements OnInit {
       // new FormGroup({
       //   cls: new FormControl('' ,Validators.required)
       // })
+    )
+    this.getdataservice.getDepartments().subscribe(
+      result=>{
+        for(let data in result){
+          this.departments.push(result[data].name)
+        }
+      }
     )
   }
 
@@ -40,7 +50,8 @@ export class AddCourseComponent implements OnInit {
       Validators.required
     ]),
     CLO: new FormArray([]),
-    class_name: new FormArray([])
+    class_name: new FormArray([]),
+    department: new FormArray([])
   })
 
   get course_code() {
@@ -58,6 +69,9 @@ export class AddCourseComponent implements OnInit {
   get class() : FormArray{
     return this.form.get('class_name') as FormArray
   }
+  get department(): FormArray{
+    return this.form.get('department') as FormArray
+  }
 
   addCLO(clo : HTMLInputElement){
     this.CLOs.push(
@@ -65,8 +79,7 @@ export class AddCourseComponent implements OnInit {
       // new FormGroup({
       //   clo: new FormControl('' ,Validators.required)
       // })
-    )
-    console.log(this.CLOs.controls)
+    ) 
 
   }
 
@@ -89,17 +102,30 @@ export class AddCourseComponent implements OnInit {
     this.class.removeAt(index)
   }
 
-  addCourse(data){
-    console.log(data)
+  addCourse(data){ 
     this.courseService.addCourse(data).subscribe(
-      result=>{
-        console.log(result)
+      result=>{ 
       }
     )
     this.courseService.getCourses().subscribe(
-      result=>{
-        console.log(result)
+      result=>{ 
       }
     ) 
+  }
+
+  oncheckchange(event){
+    var formArray : FormArray = this.department as FormArray;
+    if(event.checked){
+      formArray.push(new FormControl(event.source.value));
+    }
+    else{
+      formArray.controls.forEach((ctrl: FormControl)=>{
+        let index = formArray.controls.indexOf(ctrl);
+        if(ctrl.value == event.source.value){
+          formArray.removeAt(index);
+          return;
+        }
+      });
+    }
   }
 }

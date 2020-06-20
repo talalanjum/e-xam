@@ -15,4 +15,8 @@ export class GroupService {
     let id = localStorage.getItem('token')
     return this.http.get(this.url+"teacher/groups/"+id)
   }
+
+  deleteMessage(groupName, _id){
+    return this.http.delete(this.url+"teacher/chat/"+groupName+"/"+_id)
+  }
 }

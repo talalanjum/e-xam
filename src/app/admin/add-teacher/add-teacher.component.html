@@ -86,7 +86,8 @@
                             <div class="form-group row">
                                 <label class="col-sm-3 col-form-label">Address</label>
                                 <div class="col-sm-9">
-                                    <textarea formControlName="address" type="text" class="form-control" rows="4"></textarea>
+                                    <textarea formControlName="address" type="text" class="form-control"
+                                        rows="4"></textarea>
                                     <!-- <div *ngIf="address.invalid && address.touched"
                                         class="alert alert-danger">
                                         Address is required
@@ -98,7 +99,8 @@
                             <div class="form-group row">
                                 <label class="col-sm-3 col-form-label">Department</label>
                                 <div class="col-sm-9">
-                                    <select formControlName="department" class="form-control">
+                                    <select (change)="populateCourses()" formControlName="department"
+                                        class="form-control">
                                         <option *ngFor="let dept of departments" [value]="dept">{{dept}}
                                         </option>
                                     </select>
@@ -115,11 +117,36 @@
                                 <label class="col-sm-3 col-form-label">Courses</label>
                                 <div class="offset-0">
                                     <div class="col-sm-9">
-                                        <mat-checkbox [formGroup]="form" *ngFor="let course of courseArray"
-                                            [checked]="checked" [value]="course"
-                                            (change)="oncheckchange($event)">
-                                            {{course}}
-                                        </mat-checkbox>
+                                        <ng-container *ngFor="let course of courseArray">
+                                            <mat-checkbox [checked]="checked"
+                                                [value]="course.course_code" (change)="oncheckchange($event)">
+                                                {{course.title}}
+                                            </mat-checkbox>
+                                            <div class="row ml-1">
+                                                <ng-container formArrayName="courseclasses">
+                                                    <ng-container [formGroupName]="i"
+                                                        *ngFor="let control of form.get('courseclasses').controls; let i = index">
+                                                        <ng-container
+                                                            *ngIf="control.get('course_code').value == course.course_code">
+                                                            <ng-container
+                                                                *ngFor="let cls of control.get('class_name').value">
+                                                                <mat-checkbox class="mr-2" [checked]="checked" [value]="cls"
+                                                                    (change)="onclasschange($event, course.course_code)">
+                                                                    {{cls}}
+                                                                </mat-checkbox>
+                                                            </ng-container>
+                                                        </ng-container>
+                                                        <!-- <ng-container *ngFor="let cls of class.get('class_name').value; let j = index">
+                                                        </ng-container> -->
+                                                        <!-- <mat-checkbox formcontrol *ngFor="let course of courseArray"
+                                                            [checked]="checked" [value]="course.course_code"
+                                                            (change)="oncheckchange($event)">
+                                                            {{course.title}}
+                                                        </mat-checkbox> -->
+                                                    </ng-container>
+                                                </ng-container>
+                                            </div>
+                                        </ng-container>
                                     </div>
                                 </div>
                             </div>
@@ -129,7 +156,8 @@
                         <div class="col-md-6 offset-6">
                             <div class="form-group row offset-9">
                                 <button [disabled]="!f.valid" type="submit"
-                                    class="btn btn-primary btn-rounded btn-fw">Add Teacher</button>
+                                    class="btn btn-primary btn-rounded btn-fw">Add
+                                    Teacher</button>
                             </div>
                         </div>
                     </div>
@@ -137,4 +165,3 @@
             </div>
         </div>
     </div>
-</div>

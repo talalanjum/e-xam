@@ -23,6 +23,14 @@ export class GroupService {
     return this.http.delete(this.url+"admin/group/delete/"+id)
   }
 
+  deleteMembersFromGroup(data){
+    return this.http.post(this.url+"admin/group/remove_members", data)
+  }
+
+  addMembersToGroup(data){
+    return this.http.post(this.url+"admin/group/insert_members", data)
+  }
+
   getGroup(name){
     return this.http.get(this.url+"admin/group/"+name)
   }

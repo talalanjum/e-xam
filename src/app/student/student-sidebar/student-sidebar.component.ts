@@ -11,8 +11,8 @@ export interface RouteInfo {
 }
 
 const routes : RouteInfo[] = [
-  { path: 'course_menu/list', title: 'Courses', icon: 'menu-icon mdi mdi-television', class: '', dropdown: [] },
-  { path: 'group_menu/list', title: 'Groups', icon: 'menu-icon mdi mdi-notification-clear-all', class: '', dropdown: [] },
+  { path: 'course_menu/list', title: 'Courses', icon: 'menu-icon far fa-list-alt', class: '', dropdown: [] },
+  { path: 'group_menu/list', title: 'Groups', icon: 'menu-icon fas fa-users', class: '', dropdown: [] },
   
 ]
 
@@ -27,8 +27,7 @@ export class StudentSidebarComponent implements OnInit {
 
   public samplePagesCollapsed = true;
   public menuItems: any[];
-  user = "student";
-  // user = localStorage.getItem('token');
+  user = localStorage.getItem('token');
   role;
 
   constructor(private router: Router) { }

@@ -24,7 +24,7 @@
 
       <ng-template #stdDropdown>
         <a class="nav-link" type="button" (click)="togglestd()">
-          <i class="nc-icon {{menuItem.icon}}"></i>
+          <i class="{{menuItem.icon}}"></i>
           <span class="menu-title">{{menuItem.title}}</span>
         </a>
         <div *ngIf="showstd" class="offset-1">
@@ -39,7 +39,7 @@
 
       <ng-template #teaDropdown>
         <a class="nav-link" type="button" (click)="toggletea()">
-          <i class="nc-icon {{menuItem.icon}}"></i>
+          <i class="{{menuItem.icon}}"></i>
           <span class="menu-title">{{menuItem.title}}</span>
         </a>
         <div *ngIf="showtea" class="offset-1">

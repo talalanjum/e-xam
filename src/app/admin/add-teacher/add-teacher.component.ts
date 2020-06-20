@@ -1,7 +1,7 @@
 import { TeacherService } from './../../services/admin-services/teacher.service';
 import { GetDataService } from './../../services/get-data.service';
 import { Component, OnInit } from '@angular/core';
-import { FormControl, Validators, FormGroup, FormArray } from '@angular/forms';
+import { FormControl, Validators, FormGroup, FormArray, AbstractControl } from '@angular/forms';
 import { PasswordValidators } from 'src/app/validators/password.validators';
 import { ContactValidators } from 'src/app/validators/contact.validators';
 
@@ -14,6 +14,8 @@ export class AddTeacherComponent implements OnInit {
 
   departments = [];
   courseArray = [];
+  selectedindex
+  hidden = false;
   constructor(
     private GetDataService: GetDataService,
     private teacherService: TeacherService,
@@ -48,7 +50,8 @@ export class AddTeacherComponent implements OnInit {
     joining_date: new FormControl('', [
       Validators.required,
     ]),
-    courses: new FormArray([]),
+    courses: new FormArray([], Validators.required),
+    courseclasses: new FormArray([])
   });
 
   get user_id() {
@@ -75,7 +78,7 @@ export class AddTeacherComponent implements OnInit {
   get joining_date() {
     return this.form.get('joining_date');
   }
-  get courses(){
+  get courses() {
     return this.form.get('courses');
   }
 
@@ -89,42 +92,125 @@ export class AddTeacherComponent implements OnInit {
         }
       }
     );
-
-    this.GetDataService.getCourses().subscribe(
-      result => {
-        if(result){
-          console.log(result);
-          for (let data in result) {
-            this.courseArray.push(result[data].title);
-          }
-        }
-      }
-    );
   }
 
-  addTeacher(data){
-    this.teacherService.addTeacher(data).subscribe(
-      result=>{
-        console.log(result);
+  populateCourses() {
+    let dept = this.department.value
+    this.GetDataService.getCourseofDept(dept).subscribe(
+      result => {
+        if (result) {
+          this.courseArray = []
+          this.form.get('courseclasses').reset()
+          for (let data in result) {
+            let course = {
+              title: result[data].title,
+              course_code: result[data].course_code
+            }
+            this.courseArray.push(course);
+          }
+        }
       }
     )
   }
 
-  oncheckchange(event){
-    var formArray : FormArray = this.courses as FormArray;
-    if(event.checked){
-      formArray.push(new FormControl(event.source.value));
+  addTeacher(data) { 
+    this.teacherService.addTeacher(data).subscribe(
+      result => { 
+      }
+    )
+  }
+
+  oncheckchange(event, i) { 
+    this.selectedindex = i
+    var formArray: FormArray = this.courses as FormArray; 
+    if (event.checked) { 
+        this.GetDataService.getClassesofCourse(event.source.value).subscribe(
+          result => {
+            let courseclass = this.form.get('courseclasses') as FormArray
+            let course = []
+            for (let crs in result) {
+              course.push(result[crs])
+            }
+            courseclass.push(
+              new FormGroup({
+                course_code: new FormControl(event.source.value, []),
+                class_name: new FormControl(course, [])
+              })
+            )
+          }
+        )
+      // }
     }
-    else{
-      formArray.controls.forEach((ctrl: FormControl)=>{
-        let index = formArray.controls.indexOf(ctrl);
-        if(ctrl.value == event.source.value){
-          formArray.removeAt(index);
-          return;
+    else {
+      let courseclass = this.form.get('courseclasses') as FormArray 
+      let i = 0
+      for (let control of courseclass.controls) {
+        if (control.value.course_code == event.source.value) {
+          courseclass.removeAt(i)
+          break;
         }
-      });
+        i++
+      }
+      let courses = this.courses as FormArray
+      for (let control of courses.controls){
+        if(control.get('course_code').value == event.source.value){
+          courses.removeAt(courses.controls.indexOf(control))
+        }
+      }
     }
   }
+
+  onclasschange(event, coursecode) {
+    let formArray: FormArray = this.courses as FormArray
+    let exists = false
+    if (event.checked) {
+      if (formArray.length > 0) {
+        for (let control of formArray.controls) {
+          if(control.get('course_code').value == coursecode){
+            let classes = control.get('class_name') as FormArray
+            let ctrl = new FormControl(event.source.value)
+            classes.push(ctrl)
+            exists=true
+          }
+        }
+        if(!exists){
+          let grp = new FormGroup({
+            course_code: new FormControl(coursecode),
+            class_name: new FormArray([
+              new FormControl(event.source.value)
+            ])
+          })
+          formArray.push(grp)
+        }
+      }
+      else {
+        let grp = new FormGroup({
+          course_code: new FormControl(coursecode),
+          class_name: new FormArray([
+            new FormControl(event.source.value)
+          ])
+        })
+        formArray.push(grp)
+      }
+    }
+    else {
+      for(let control of formArray.controls){
+        if(control.get('course_code').value==coursecode){
+          let classes = control.get('class_name') as FormArray
+          for(let cls of classes.controls){
+            if(cls.value == event.source.value){
+              classes.removeAt(classes.controls.indexOf(cls))
+            }
+          }
+          if(classes.length==0){
+            formArray.removeAt(formArray.controls.indexOf(control))
+          }
+        }
+      }
+    }
+
+  }
+
 
 
 }

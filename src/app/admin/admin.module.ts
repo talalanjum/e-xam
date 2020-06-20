@@ -24,6 +24,7 @@ import { GroupListComponent } from './group-list/group-list.component';
 import { SettingsComponent } from './settings/settings.component';
 import { GroupDetailsComponent } from './group-details/group-details.component';
 import { AddAdminComponent } from './add-admin/add-admin.component';
+import { AddGroupMembersComponent } from './add-group-members/add-group-members.component';
  
 
 @NgModule({
@@ -45,7 +46,9 @@ import { AddAdminComponent } from './add-admin/add-admin.component';
     GroupListComponent,
     SettingsComponent,
     GroupDetailsComponent,
-    AddAdminComponent,],
+    AddAdminComponent,
+    AddGroupMembersComponent,
+  ],
   imports: [
     CommonModule,
     NgbModule,

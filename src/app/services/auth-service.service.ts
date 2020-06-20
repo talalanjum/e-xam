@@ -17,9 +17,12 @@ export class AuthService {
     return this.http.post(this.url + "login", credentials)
       .pipe(
         map((response) => {
-          console.log(response);
           if (response[0].user_id) {
-            localStorage.setItem('token', response[0].name);
+            localStorage.setItem('token', response[0].user_id);
+            return true;
+          }
+          else if(response[0].registration_number){
+            localStorage.setItem('token', response[0].registration_number);
             return true;
           }
           return false;

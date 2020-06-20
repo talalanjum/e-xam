@@ -1,1 +1,116 @@
-<p>add-assignment works!</p>
+<!-- course_code, mapping_CLO, uploaded_by, class_name_uploaded_for, content, description -->
+<div class="row">
+    <div class="col-12 grid-margin">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">{{coursedata.course_name}}</h4>
+                <form class="form-sample" [formGroup]="form" (ngSubmit)="addAssignment()">
+                    <p class="card-description">
+                        Add Assignment
+                    </p>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">Course Code</label>
+                                <div class="col-sm-9 pb-1">
+                                    <label>{{coursedata.course_code}}</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">Uploaded By</label>
+                                <div class="col-sm-9 pb-1">
+                                    <label>{{teacher}}</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">Mapping CLO</label>
+                                <div class="col-sm-9">
+                                    <mat-checkbox formArrayName="mapping_CLO" class="pb-1" *ngFor="let clo of coursedata.clos" [checked]="checked" [value]="clo"
+                                        (change)="onclochange($event)">
+                                        {{clo}}
+                                    </mat-checkbox>
+                                    <div *ngIf="mapping_CLO.invalid && mapping_CLO.touched" class="alert alert-danger">CLO is required</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">Content Upload</label>
+                                <div class="col-sm-9 pb-1">
+                                    <input formControlName="content" (change)="onFileChange($event)" type="file" class="col-form-label" />
+                                    <div *ngIf="content.invalid && content.touched" class="alert alert-danger">Content File is required</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div><div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">Marks</label>
+                                <div class="col-sm-9">
+                                    <input type="number" formControlName="marks" class="form-control" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">Due Date</label>
+                                <div class="col-sm-9">
+                                    <input type="date" formControlName="due_date" class="form-control" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">Assignment Name</label>
+                                <div class="col-sm-9">
+                                    <input type="text" formControlName="name" class="form-control" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">Classes</label>
+                                <div class="col-sm-9">
+                                    <mat-checkbox formArrayName="class_name_uploaded_for" class="pb-1" *ngFor="let class of coursedata.classes" [checked]="checked" [value]="class"
+                                        (change)="onclasschange($event)">
+                                        {{class}}
+                                    </mat-checkbox>
+                                    <div *ngIf="!class_name_uploaded_for.controls[0] && class_name_uploaded_for.touched">At least one class is required</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">Notify In Group</label>
+                                <div class="col-sm-9">
+                                    <select class="form-control" formControlName="group_to_notify">
+                                        <option disabled selected>Select Groups</option>
+                                        <option *ngFor="let group of groups" [value]="group">{{group}}</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 offset-6">
+                            <div class="form-group row offset-9">
+                                <button [disabled]="!form.valid" type="submit"
+                                    class="btn btn-primary btn-rounded btn-fw">Add Assignment</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

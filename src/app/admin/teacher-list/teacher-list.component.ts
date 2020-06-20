@@ -1,6 +1,6 @@
 import { TeacherService } from './../../services/admin-services/teacher.service';
-import { Component, OnInit } from '@angular/core';
-import { MatTableDataSource } from '@angular/material';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { MatTableDataSource, MatPaginator } from '@angular/material';
 import { ModalDismissReasons, NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import { NgForm, Validators, FormGroup, FormControl, FormArray } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -29,7 +29,7 @@ export interface PeriodicElement {
   styleUrls: ['./teacher-list.component.scss']
 })
 export class TeacherListComponent implements OnInit {
-
+  @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
   ELEMENT_DATA: PeriodicElement[];
   displayedColumns: string[] = ['position', 'user_id', 'name', 'department', 'actions'];
   dataSource
@@ -62,17 +62,7 @@ export class TeacherListComponent implements OnInit {
    }
 
   form = new FormGroup({
-    user_id: new FormControl('', [
-      Validators.required,
-    ]),
-    password: new FormControl('', [
-      Validators.required,
-      PasswordValidators.cannotContainSpace,
-      Validators.minLength(8),
-    ]),
-    name: new FormControl('', [
-      Validators.required,
-    ]),
+    user_id: new FormControl(),
     contact: new FormControl('', [
       Validators.required,
       ContactValidators.contactcheck,
@@ -84,13 +74,6 @@ export class TeacherListComponent implements OnInit {
     address: new FormControl('', [
       Validators.required,
     ]),
-    department: new FormControl('', [
-      Validators.required,
-    ]),
-    joining_date: new FormControl('', [
-      Validators.required,
-    ]),
-    courses: new FormArray([]),
   });
 
   get user_id() {
@@ -166,6 +149,7 @@ export class TeacherListComponent implements OnInit {
       position++
     }
     this.dataSource = new MatTableDataSource(this.ELEMENT_DATA);
+    this.dataSource.paginator = this.paginator;
   }
 
   openEdit(content, id) {
@@ -185,7 +169,7 @@ export class TeacherListComponent implements OnInit {
   openDetails(content, id) {
     this.teacherService.getTeacher(id).subscribe(
       result => {
-        if (result) {
+        if (result) { 
           this.populateDetails(result);
         }
       }
@@ -202,38 +186,29 @@ export class TeacherListComponent implements OnInit {
     this.teacherData = data[0]
     this.teacherData.contact = 0 + "" + this.teacherData.contact;
     this.teacherData.joining_date = this.teacherData.joining_date.slice(0, 10);
-
-    // this.studentData = data[0];
-    // this.studentData.contact = 0 + "" + this.studentData.contact;
-    // this.studentData.joining_date = this.studentData.joining_date.slice(0, 10);
-    // console.log(data[0].password);
+    this.form.patchValue({
+      user_id: this.teacherData.user_id
+    })
   }
 
   populateDetails(data) {
     this.teacherData = data[0];
     this.teacherData.contact = 0 + "" + this.teacherData.contact;
     this.teacherData.joining_date = this.teacherData.joining_date.slice(0, 10);
-    // let coursesToPush = []
-    // for (let index in data[0].courses) {
-    //   let course = data[0].courses[index].course_name;
-    //   coursesToPush.push(course);
-    // }
-    // this.studentData.courses=coursesToPush;
   }
 
   updateTeacher(data: NgForm) {
     this.teacherService.updateTeacher(data).subscribe(
-      result=>{
-        console.log(result)
+      result=>{ 
       }
     )
   }
 
-  deleteTeacher(id) {
+  deleteTeacher(id, index) {
     this.teacherService.deleteTeacher(id).subscribe(
-      result=>{
-        console.log(result)
-        this.router.navigateByUrl('admin/manage_teachers/listall')
+      result=>{ 
+        this.dataSource.data.splice(index, 1)
+        this.dataSource._updateChangeSubscription()
       }
     )
   }

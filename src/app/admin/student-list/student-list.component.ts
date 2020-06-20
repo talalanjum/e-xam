@@ -1,10 +1,10 @@
-import { MatTableDataSource } from '@angular/material';
+import { MatTableDataSource, MatPaginator } from '@angular/material';
 import { Router } from '@angular/router';
 import { GetDataService } from './../../services/get-data.service';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { StudentServiceService } from 'src/app/services/student-service.service';
 import { NgbModalOptions, NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
-import { FormGroup, FormControl, Validators, FormArray, FormBuilder, AbstractControl } from '@angular/forms';
+import { FormGroup, FormControl, Validators, FormArray, FormBuilder, AbstractControl, NgForm } from '@angular/forms';
 import { UsernameValidators } from 'src/app/validators/username.validators';
 import { PasswordValidators } from 'src/app/validators/password.validators';
 import { ContactValidators } from 'src/app/validators/contact.validators';
@@ -30,7 +30,7 @@ interface PeriodicElement {
 })
 
 export class StudentListComponent implements OnInit {
-
+  @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
   ELEMENT_DATA: PeriodicElement[] = [];
   displayedColumns: string[] = ['position', 'registration_number', 'name', 'department', 'actions'];
   dataSource
@@ -106,19 +106,27 @@ export class StudentListComponent implements OnInit {
     this.studentservice
       .getBatchStudents(batch)
       .subscribe(result => {
-        if (result) {
-          console.log(result);
+        if ((result as string).includes('No Student found')) {
+          this.ELEMENT_DATA = []
+          this.dataSource = new MatTableDataSource(this.ELEMENT_DATA)
+        }
+        else {
           this.populateTable(result);
         }
+      }, err => {
+
       });
   }
 
   private getDismissReason(reason: any): string {
     if (reason === ModalDismissReasons.ESC) {
+      this.emptyDataFields()
       return 'by pressing ESC';
     } else if (reason === ModalDismissReasons.BACKDROP_CLICK) {
+      this.emptyDataFields()
       return 'by clicking on a backdrop';
     } else {
+      this.emptyDataFields()
       return `with: ${reason}`;
     }
   }
@@ -137,24 +145,13 @@ export class StudentListComponent implements OnInit {
       position++;
     }
     this.dataSource = new MatTableDataSource(this.ELEMENT_DATA);
+    this.dataSource.paginator = this.paginator;
   }
 
   form = this.fb.group({
-    regno: this.fb.control('', [
-      Validators.required,
-      UsernameValidators.regexmatch
-    ]),
-    password: this.fb.control('', [
-    ]),
-    name: this.fb.control('', [
-      Validators.required,
-    ]),
-    batch: this.fb.control('', [
-      Validators.required,
-    ]),
+    regno: this.fb.control(''),
     contact: this.fb.control('', [
       Validators.required,
-      ContactValidators.contactcheck,
     ]),
     email: this.fb.control('', [
       Validators.required,
@@ -162,20 +159,6 @@ export class StudentListComponent implements OnInit {
     ]),
     address: this.fb.control('', [
       Validators.required,
-    ]),
-    department: this.fb.control('', [
-      Validators.required,
-    ]),
-    joining_date: this.fb.control('', [
-      Validators.required,
-    ]),
-    semester: this.fb.control('', [
-      Validators.required,
-    ]),
-    courses: this.fb.array([
-      this.fb.group({
-        course: this.fb.control(null, [])
-      })
     ]),
   });
 
@@ -214,6 +197,7 @@ export class StudentListComponent implements OnInit {
   }
 
   openEdit(content, id) {
+
     this.studentservice.getStudentById(id).subscribe(result => {
       if (result) {
         this.populateEdit(result);
@@ -243,11 +227,13 @@ export class StudentListComponent implements OnInit {
     });
 
   }
-  populateEdit(data){
+  populateEdit(data) {
     this.studentData = data[0];
     this.studentData.contact = 0 + "" + this.studentData.contact;
     this.studentData.joining_date = this.studentData.joining_date.slice(0, 10);
-    console.log(data[0].password);
+    this.form.patchValue({
+      regno: this.studentData.registration_number
+    })
   }
 
   populateDetails(data) {
@@ -259,15 +245,13 @@ export class StudentListComponent implements OnInit {
       let course = data[0].courses[index].course_name;
       coursesToPush.push(course);
     }
-    this.studentData.courses=coursesToPush;
+    this.studentData.courses = coursesToPush;
   }
 
   updateStudent(data) {
-    console.log(data)
     this.studentservice.updateStudent(data)
       .subscribe(result => {
         if (result) {
-          console.log(result)
         }
         else {
         }
@@ -279,20 +263,21 @@ export class StudentListComponent implements OnInit {
   }
 
 
-  deleteStudent(id) {
+  deleteStudent(id, index) {
+
     this.studentservice.deleteStudent(id)
       .subscribe(result => {
         if (result) {
-          console.log(result)
-          this.router.navigateByUrl("admin/manage_students/listall");
+          this.dataSource.data.splice(index, 1)
+          this.dataSource._updateChangeSubscription()
         }
       },
-      err =>{
-        console.log("Student Removed")
-      })
+        err => {
+        })
   }
 
   emptyDataFields() {
+    this.form.reset()
     this.studentData = {
       registration_number: '',
       name: '',

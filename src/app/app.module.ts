@@ -36,6 +36,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CommonModule } from '@angular/common';
 import { MatSliderModule, MatButtonModule, MatIconModule, MatFormFieldModule, MatSidenavModule, MatToolbarModule, MatMenuModule, MatListModule, MatSelectModule } from '@angular/material';
 import { StudentModule } from './student/student.module';
+import { ToastrModule } from 'ngx-toastr';
+
 
 @NgModule({
   declarations: [
@@ -72,6 +74,8 @@ import { StudentModule } from './student/student.module';
     AdminModule,
     StudentModule,
     MatSelectModule,
+    ToastrModule.forRoot()
+
     // MatSliderModule,
     // MatButtonModule,
     // MatIconModule,

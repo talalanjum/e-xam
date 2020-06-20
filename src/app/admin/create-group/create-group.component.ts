@@ -1,3 +1,4 @@
+import { Router } from '@angular/router';
 import { GroupService } from './../../services/admin-services/group.service';
 import { PaginationComponent } from './../../template/pagination/pagination.component';
 import { NgForm, FormGroup, FormControl, Validators, FormArray, FormsModule } from '@angular/forms';
@@ -33,7 +34,7 @@ export class CreateGroupComponent implements OnInit {
   @ViewChild('teaPage', { static: true }) teapaginator: MatPaginator;
 
   ELEMENT_DATA_Std: PeriodicElementStd[] = [];
-  displayedColumnsStd: string[] = ['select', 'position', 'registration_number', 'name', 'department', 'actions'];
+  displayedColumnsStd: string[] = ['select', 'position', 'registration_number', 'name', 'department'];
   dataSourceStd
   batches = []
   initialSelectionStd = [];
@@ -41,7 +42,7 @@ export class CreateGroupComponent implements OnInit {
   selectionStd = new SelectionModel<String>(this.allowMultiSelectStd, this.initialSelectionStd);
 
   ELEMENT_DATA_Tea: PeriodicElementTea[];
-  displayedColumnsTea: string[] = ['select', 'position', 'user_id', 'name', 'department', 'actions'];
+  displayedColumnsTea: string[] = ['select', 'position', 'user_id', 'name', 'department'];
   dataSourceTea
   initialSelectionTea = [];
   allowMultiSelectTea = true;
@@ -51,7 +52,8 @@ export class CreateGroupComponent implements OnInit {
     private studentservice: StudentServiceService,
     private GetDataService: GetDataService,
     private teacherService: TeacherService,
-    private groupService: GroupService
+    private groupService: GroupService,
+    private router: Router
   ) { }
 
   form = new FormGroup({
@@ -163,11 +165,10 @@ export class CreateGroupComponent implements OnInit {
     }
     for(let value of this.selectionTea.selected){
       this.members.push(new FormControl(value['user_id'], []))
-    }
-    console.log(this.form.value)
+    } 
     this.groupService.addGroup(this.form.value).subscribe(
-      result=>{
-        console.log(result)
+      result=>{ 
+        this.router.navigate(['admin/manage_groups/listall'])
       }
     )
   }

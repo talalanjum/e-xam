@@ -1,0 +1,242 @@
+<div class="loaded-content text-center" [class.blurred]="showSpinner">
+    <div class="wrapper">
+        <div class="overlay" *ngIf="showSpinner">
+            <div class="spinner-wrapper ">
+                <div class="container">
+                    <div class="row ">
+                        <div id="loader">
+                            <div class="dot"></div>
+                            <div class="dot"></div>
+                            <div class="dot"></div>
+                            <div class="dot"></div>
+                            <div class="dot"></div>
+                            <div class="dot"></div>
+                            <div class="dot"></div>
+                            <div class="dot"></div>
+                            <div class="loading">
+                                <p class="spinner-message" *ngIf="message && message !== ''">
+                                    {{message}}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <ng-content></ng-content>
+    </div>
+</div>
+
+
+<div class="row m-0 pt-3 pr-3 pl-3">
+    <div class="col-md-6">
+        <h3 class="mat-h1">Source Data Status</h3>
+    </div>
+    <div class="col-md-6 text-right">
+        <button mat-button class="btn btn-secondary" (click)="backClicked()">
+            <!--[hidden]="bEditing"-->
+            <i class="fa fa-chevron-left"></i> Back
+        </button>
+    </div>
+</div>
+
+<!-- Views button -->
+<div class="text-right mr-4 mb-2">
+    <button mat-button (click)="selectView('list')" [ngClass]="showList ? 'active-class' : 'inactive-class'"
+        matTooltip="List View">
+
+        <i style="font-size:1rem;" class="fa fa-th-list"></i>
+    </button>
+
+    <button mat-button [ngClass]="showCard ? 'active-class' : 'inactive-class'" (click)="selectView('card')"
+        matTooltip="Detail View">
+
+        <i style="font-size:1rem;" class="fa fa-th-large"></i>
+    </button>
+    <button [ngClass]="showHeader ? 'active-class' : 'inactive-class'" mat-button (click)="selectView('header')"
+        matTooltip="Summary View">
+
+        <i style="font-size:1rem;" class="fa fa-th"></i>
+    </button>
+</div>
+
+<!-- List View -->
+<div class="row m-0 pl-4" [hidden]="showCard || showHeader">
+    <mat-form-field class="searchField">
+        <input matInput type="text" (keyup)="doFilter($event.target.value)" placeholder="Search">
+    </mat-form-field>
+</div>
+
+<div class="view-container pr-4 pl-4 pb-2" [hidden]="showCard || showHeader">
+    <div class="text-right">
+        <a class="text-right"
+            (click)="exporter.exportTable('xlsx', {fileName:'System_Status', sheet:'system_status', Props: {Author: 'VRAS'}})"
+            style="color:Green;font-size: 15px; cursor: pointer;">
+            xlsx
+            <i class="fa fa-download pr-2"></i>
+        </a>
+        <a class="text-right" (click)="exporter.exportTable('csv', {fileName:'System_Status'})"
+            style="color:Green;font-size: 15px; cursor: pointer;">
+            csv <i class="fa fa-download pr-2"></i>
+        </a>
+
+    </div>
+    <div class="table-container mat-elevation-z8">
+
+        <table matSort matTableExporter #exporter="matTableExporter" mat-table [dataSource]="dataSource"
+            multiTemplateDataRows>
+            <ng-container matColumnDef="record">
+                <th mat-header-cell *matHeaderCellDef class="detail"> Records </th>
+                <td mat-cell *matCellDef="let log" style="font-size:15px;" class="detail">
+                    {{log.record}} </td>
+            </ng-container>
+            <ng-container matColumnDef="model">
+                <th mat-header-cell *matHeaderCellDef class="detail" mat-sort-header> Models </th>
+                <td mat-cell *matCellDef="let log" style="font-size:15px;" class="detail"> {{log.model}}
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="status">
+                <th mat-header-cell *matHeaderCellDef class="detail" mat-sort-header> Status </th>
+                <td mat-cell *matCellDef="let log" style="font-size:15px;" class="detail"> {{log.status}}
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="dateTime">
+                <th mat-header-cell *matHeaderCellDef class="detail" mat-sort-header> Date </th>
+                <td mat-cell *matCellDef="let log" style="font-size:15px;" class="detail">
+                    {{log.dateTime |  date:'dd/MM/yyyy HH:mm'}}
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="description">
+                <th mat-header-cell *matHeaderCellDef class="detail" mat-sort-header> Description </th>
+                <td mat-cell *matCellDef="let log" style="font-size:15px;" class="detail">{{log.description}}
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="period">
+                <th mat-header-cell *matHeaderCellDef class="detail"> Period </th>
+                <td mat-cell *matCellDef="let log" style="font-size:15px;" class="detail"> {{log.month}}-{{log.year}}
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="year">
+                <th mat-header-cell *matHeaderCellDef class="detail" mat-sort-header> Year </th>
+                <td mat-cell *matCellDef="let log" style="font-size:15px;" class="detail"> {{log.year}}
+                </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky:true; top"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;" [ngClass]="{
+                'status-success': row.status == 'success',
+                'status-failure': row.status == 'failure'
+                }"></tr>
+
+        </table>
+
+    </div>
+    <mat-paginator class="paginator mat-elevation-z8" [pageSizeOptions]="[10, 15, 20]" showFirstLastButtons>
+    </mat-paginator>
+</div>
+<!---------------->
+
+<!-- Summary View -->
+<div class="p-2 m-4 mat-elevation-z5" *ngIf="showHeader" [hidden]="showCard || showList">
+
+    <div class="text-right">
+        <button mat-button class="btn btn-primary mr-2" matTooltip='previous month' (click)="prevDiv()"
+            [disabled]="disablePrev">
+            <i class="fa fa-chevron-left"></i>
+        </button>
+        <button mat-button class="btn btn-primary mr-2" matTooltip='next month' (click)="nextDiv()"
+            [disabled]="disableNext">
+            <i class="fa fa-chevron-right"></i>
+        </button>
+    </div>
+
+    <div class="border border-black text-left mt-2 mb-2">
+        <div class="text-right row">
+            <span class="pl-4 pt-2">
+                Data for
+                <b class="mt-2">
+                    {{currentData.month}} - {{currentData.year}}
+                </b>
+            </span>
+        </div>
+
+        <br>
+        <div *ngFor="let elem of currentData.data" class="pl-2">
+            <span>{{elem.departmentName}}</span>
+            <div class="row m-0 p-2">
+
+
+                <div class="col-md-4 mb-2 text-center " *ngFor="let modelName of elem.models; let i = index">
+                    <div class="box">
+                        <div class="card-body text-white"
+                            [ngClass]="{'bg-success': elem.status[i] == 'success', 'bg-danger': elem.status[i] == 'failure'}">
+                            <p style="font-size: 0.875rem" class="mb-0">
+                                {{modelName}}
+                                <span class="badge badge-dark">{{elem.records[i]}}</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!------------------>
+
+
+<!-- Detail View -->
+<div class="p-2 m-4 mat-elevation-z5" *ngIf="showCard" [hidden]="showList || showHeader">
+
+    <div class="text-right">
+
+        <button mat-button class="btn btn-primary mr-2" matTooltip='previous month' (click)="prevDiv()"
+            [disabled]="disablePrev">
+            <i class="fa fa-chevron-left">
+
+            </i>
+        </button>
+        <button mat-button class="btn btn-primary mr-2" matTooltip='next month' (click)="nextDiv()"
+            [disabled]="disableNext">
+            <i class="fa fa-chevron-right">
+
+            </i>
+        </button>
+    </div>
+
+    <div class="border border-black text-left mt-2 mb-2">
+        <div class="text-right row">
+            <span class="pl-4 pt-2">
+                Data for
+                <b class="mt-2">
+                    {{currentData.month}} - {{currentData.year}}
+                </b>
+            </span>
+        </div>
+
+        <br>
+        <div *ngFor="let elem of currentData.data" class="pl-2">
+            {{elem.departmentName}}
+
+            <div class="row m-0 p-2">
+                <div class="col-md-3 mb-2 text-center " style="cursor:pointer;"
+                    *ngFor="let modelName of elem.models; let i = index">
+                    <div class="card">
+                        <div class="card-header text-white"
+                            [ngClass]="{'bg-success':elem.status[i] == 'success', 'bg-danger' : elem.status[i] == 'failure'}">
+                            <p style="font-size:0.875rem" class="mb-0">
+                                {{modelName}}
+                            </p>
+                        </div>
+                        <div class="card-body" style="height:14vh;">
+                            <!-- <p style="font-size:0.7rem;">{{elem.dateTime[i] | date:'dd/MM/yyyy HH:mm'}}</p> -->
+                            <p class="card-text" style="font-size:0.75rem;"
+                                [ngClass]="{'font-weight-bold text-success':elem.status[i] == 'success', 'font-weight-normal' : elem.status[i] == 'failure'}">
+                                {{elem.description[i]}} {{elem.records[i]}}</p>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!----------------->

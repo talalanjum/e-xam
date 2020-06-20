@@ -1,6 +1,7 @@
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators'
 
 import { TeacherRoutingModule } from './teacher-routing.module';
 import { TeacherFooterComponent } from './teacher-footer/teacher-footer.component';
@@ -9,10 +10,6 @@ import { TeacherSidebarComponent } from './teacher-sidebar/teacher-sidebar.compo
 import { TeacherComponent } from './teacher/teacher.component';
 import { CourseListComponent } from './course-list/course-list.component';
 import { GroupListComponent } from './group-list/group-list.component';
-import { StudentListComponent } from './student-list/student-list.component';
-import { AssignmentListComponent } from './assignment-list/assignment-list.component';
-import { ContentListComponent } from './content-list/content-list.component';
-import { QuestionsListComponent } from './questions-list/questions-list.component';
 import { AddAssignmentComponent } from './add-assignment/add-assignment.component';
 import { AddContentComponent } from './add-content/add-content.component';
 import { AddQuestionComponent } from './add-question/add-question.component';
@@ -20,7 +17,10 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatInputModule, MatTableModule, MatFormFieldModule, MatCheckboxModule, MatPaginatorModule } from '@angular/material';
 import { HttpClientModule } from '@angular/common/http';
 import { GroupchatComponent } from './groupchat/groupchat.component';
-
+import { CourseComponent } from './course/course.component';
+import { Ng2SearchPipeModule } from 'ng2-search-filter';
+import { ContentEditComponent } from './content-edit/content-edit.component';
+import { EditQuestionComponent } from './edit-question/edit-question.component';
 
 @NgModule({
   declarations: [
@@ -30,14 +30,13 @@ import { GroupchatComponent } from './groupchat/groupchat.component';
     TeacherComponent,
     CourseListComponent,
     GroupListComponent,
-    StudentListComponent,
-    AssignmentListComponent,
-    ContentListComponent,
-    QuestionsListComponent,
     AddAssignmentComponent,
     AddContentComponent,
     AddQuestionComponent,
-    GroupchatComponent
+    GroupchatComponent,
+    CourseComponent,
+    ContentEditComponent,
+    EditQuestionComponent
   ],
   imports: [
     CommonModule,
@@ -58,7 +57,9 @@ import { GroupchatComponent } from './groupchat/groupchat.component';
     MatFormFieldModule,
     MatCheckboxModule,
     HttpClientModule,
-    MatPaginatorModule
+    MatPaginatorModule,
+    RxReactiveFormsModule,
+    Ng2SearchPipeModule
   ]
 })
 export class TeacherModule { }

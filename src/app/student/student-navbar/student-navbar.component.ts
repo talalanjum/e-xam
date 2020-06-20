@@ -9,7 +9,8 @@ import { AuthService } from 'src/app/services/auth-service.service';
   providers: [NgbDropdownConfig],
 })
 export class StudentNavbarComponent implements OnInit {
-  user = "student"
+  
+  user = localStorage.getItem('token')
   public sidebarOpened = false;
   toggleOffcanvas() {
     this.sidebarOpened = !this.sidebarOpened;

@@ -9,8 +9,7 @@ import { NgbDropdownConfig } from '@ng-bootstrap/ng-bootstrap';
   providers: [NgbDropdownConfig]
 })
 export class AdminNavbarComponent implements OnInit {
-  // user = localStorage.getItem('token');
-  user = "admin"
+  user = localStorage.getItem('token');
   public sidebarOpened = false;
   toggleOffcanvas() {
     this.sidebarOpened = !this.sidebarOpened;

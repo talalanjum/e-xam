@@ -4,6 +4,8 @@ import { StudentServiceService } from 'src/app/services/student-service.service'
 import { GroupService } from './../../services/admin-services/group.service';
 import { GroupshareService } from './../../services/admin-services/groupshare.service';
 import { Component, OnInit } from '@angular/core';
+import { SelectionModel } from '@angular/cdk/collections';
+import { Router } from '@angular/router';
 
 interface PeriodicElement {
   position: any;
@@ -19,15 +21,17 @@ interface PeriodicElement {
 export class GroupDetailsComponent implements OnInit {
 
   ELEMENT_DATA: PeriodicElement[] = [];
-  displayedColumns: string[] = ['position', 'name', 'actions'];
+  displayedColumns: string[] = ['select', 'position', 'name', 'id'];
   dataSource
   groupName
+  selection = new SelectionModel<any>(true, []);
 
   constructor(
     private groupshare: GroupshareService,
     private groupService: GroupService,
     private studentService: StudentServiceService,
-    private teacherService: TeacherService
+    private teacherService: TeacherService,
+    private router: Router
   ) { }
 
   applyFilter(filterValue: string) {
@@ -44,11 +48,9 @@ export class GroupDetailsComponent implements OnInit {
       this.groupService.getGroup(this.groupName).subscribe(
         result => {
           this.populateTable(result)
-          console.log(this.ELEMENT_DATA)
         }
       )
     )
-    this.dataSource = new MatTableDataSource(this.ELEMENT_DATA);
   }
 
   async populateTable(data) {
@@ -81,6 +83,43 @@ export class GroupDetailsComponent implements OnInit {
         )
       }
     }
+    setTimeout(() => {
+      this.dataSource = new MatTableDataSource(this.ELEMENT_DATA);
+    }, 1000)
+  }
+
+  isAllSelected() {
+    const numSelected = this.selection.selected.length;
+    const numRows = this.dataSource.data.length;
+    return numSelected === numRows;
+  }
+
+  masterToggle() {
+    this.isAllSelected() ?
+      this.selection.clear() :
+      this.dataSource.data.forEach(row => this.selection.select(row));
+  }
+
+  removeMembers() {
+    let members = []
+    for (let member of this.selection.selected) {
+      members.push(member.id)
+    }
+    let data = {
+      name: this.groupName,
+      members: members
+    }
+    this.groupService.deleteMembersFromGroup(data).subscribe(
+      result => {
+        if (result) {
+          this.router.navigate(['/admin/manage_groups/listall'])
+        }
+      }
+    )
+  }
+
+  addMembers(){
+    this.router.navigate(['/admin/manage_groups/addmembers'])
   }
 
 }

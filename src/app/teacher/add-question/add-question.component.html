@@ -1,1 +1,201 @@
-<p>add-question works!</p>
+<!-- course_code, mapping_CLO, uploaded_by, class_name_uploaded_for, content, description -->
+<div class="row">
+    <div class="col-12 grid-margin">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">{{coursedata.course_name}}</h4>
+                <form [formGroup]="form" class="form-sample">
+                    <p class="card-description">
+                        Add Question
+                    </p>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">Course Code</label>
+                                <div class="col-sm-9 pb-1">
+                                    <label>{{coursedata.course_code}}</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">Uploaded By</label>
+                                <div class="col-sm-9 pb-1">
+                                    <label>{{teacher}}</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">Topic</label>
+                                <div class="col-sm-9">
+                                    <input type="text" formControlName="topic" class="form-control" />
+                                    <!-- <div *ngIf="mapping_CLO.invalid && mapping_CLO.touched" class="alert alert-danger">CLO is required</div> -->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">Mapping CLO</label>
+                                <div class="col-sm-9">
+                                    <select formControlName="mapping_CLO" class="form-control">
+                                        <option disabled selected>Select CLO</option>
+                                        <option *ngFor="let clo of coursedata.clos" [value]="clo">{{clo}}</option>
+                                    </select>
+                                    <!-- <div *ngIf="mapping_CLO.invalid && mapping_CLO.touched" class="alert alert-danger">CLO is required</div> -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">Question Text</label>
+                                <div class="col-sm-9">
+                                    <input formControlName="question_text" type="text" class="form-control" />
+                                    <!-- <div *ngIf="mapping_CLO.invalid && mapping_CLO.touched" class="alert alert-danger">CLO is required</div> -->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">Type</label>
+                                <div class="col-sm-9 pb-1">
+                                    <select formControlName="type" (change)="typechange($event)" class="form-control">
+                                        <option disabled selected>Select Type</option>
+                                        <option value="MCQ">MCQ</option>
+                                        <option value="True/False">True/False</option>
+                                        <option value="Fill in the Blank">Fill in the Blank</option>
+                                        <option value="Descriptive">Descriptive</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <ng-container *ngIf="selectedtype=='MCQ'">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Options
+                                        <span class="offset-1" (click)="addOption(addoption)"><i
+                                                class="fas fa-plus add-icon"></i>
+                                        </span>
+                                    </label>
+                                    <ng-container *ngIf="options.controls[1]; else add_option" formArrayName="options">
+                                        <div class="col-sm-9">
+                                            <ng-container [formGroupName]="i"
+                                                *ngFor="let option of options.controls; let i = index">
+                                                <div class="pb-2" style="display: -webkit-inline-box;">
+                                                    <input [formControl]="option" type="text" #addoption
+                                                        class="form-control">
+                                                    <span class="pl-2 text-danger" (click)="removeOption(option)"><i
+                                                            class="fas fa-trash del-icon"></i></span>
+                                                </div>
+                                                <div class="alert alert-danger"
+                                                    *ngIf="option.invalid && option.touched">
+                                                    <div *ngIf="option.errors.required">Option is required
+                                                    </div>
+                                                </div>
+                                            </ng-container>
+                                        </div>
+                                    </ng-container>
+                                    <ng-template #add_option>
+                                        <div class="alert alert-danger">
+                                            Must add at least two options
+                                        </div>
+                                    </ng-template>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Answer</label>
+                                    <div class="col-sm-9">
+                                        <select formControlName="answer" class="form-control">
+                                            <option disabled selected>Select Type</option>
+                                            <option *ngFor="let option of options.controls" [value]="option.value">
+                                                {{option.value}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </ng-container>
+                    <ng-container *ngIf="selectedtype=='True/False'">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Answer</label>
+                                    <div class="col-sm-9">
+                                        <select formControlName="answer" class="form-control">
+                                            <option disabled selected>Select Answer</option>
+                                            <option value="True">True</option>
+                                            <option value="False">False</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </ng-container>
+                    <ng-container *ngIf="selectedtype=='Fill in the Blank'">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Answer</label>
+                                    <div class="col-sm-9">
+                                        <input type="text" class="form-control" formControlName="answer">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </ng-container>
+                    <ng-container *ngIf="selectedtype=='Descriptive'">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Answer</label>
+                                    <div class="col-sm-9">
+                                        <textarea rows="5" class="form-control" formControlName="answer"
+                                            type="text"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </ng-container>
+                    <ng-container *ngIf="selectedtype=='Descriptive'">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Keywords</label>
+                                    <div class="col-sm-9">
+                                        <input placeholder="Enter Keyword and press enter" type="text"
+                                            class="form-control" #k (keyup.enter)="addKeyword($event)">
+                                        <ng-container *ngIf="keywords.controls[0]" formArrayName="keywords">
+                                            <ul class="col-sm-12">
+                                                <li [formGroupName]="i"
+                                                    *ngFor="let keyword of keywords.controls; let i = index">
+                                                    {{keyword.value}}
+                                                    <span class="pl-2 text-danger" (click)="removeKeyword(keyword)"><i
+                                                            class="fas fa-trash del-icon"></i></span>
+                                                </li>
+                                            </ul>
+                                        </ng-container>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </ng-container>
+                    <div class="row">
+                        <div class="col-md-6 offset-6">
+                            <div class="form-group row offset-9">
+                                <button [disabled]="!form.valid" type="button"
+                                    class="btn btn-primary btn-rounded btn-fw" (click)="addQuestion(form.value)">Add Question</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

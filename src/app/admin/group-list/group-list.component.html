@@ -24,12 +24,10 @@
             <!-- Symbol Column -->
             <ng-container matColumnDef="actions">
                 <th mat-header-cell *matHeaderCellDef> Actions </th>
-                <td mat-cell *matCellDef="let element">
-                    <i class="fas fa-user-edit p-1 text-success" (click)="openEdit(editmodal, element.id)"
-                        placement="bottom" ngbTooltip="Edit Group"></i>
-                    <i class="fas fa-trash text-danger" (click)="deleteGroup(element.id)" placement="bottom"
+                <td mat-cell *matCellDef="let element; let j = index">
+                    <i class="fas fa-trash text-danger" (click)="deleteGroup(element.name, j)" placement="bottom"
                         ngbTooltip="Delete Group"></i>
-                    <i class="fas fa-info-circle p-1 text-primary" (click)="navigateGroup(element.name)"
+                    <i class="fas fa-info-circle p-1 text-primary" (click)="navigateGroup(element.name, element.members)"
                         placement="bottom" ngbTooltip="Group Details"></i>
                 </td>
             </ng-container>
@@ -37,6 +35,7 @@
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
             <tr class="rowhover" mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
         </table>
+        <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
     </div>
 
 </div>

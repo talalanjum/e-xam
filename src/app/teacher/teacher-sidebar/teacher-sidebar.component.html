@@ -18,7 +18,7 @@
       </li>
       <li *ngFor="let menuItem of menuItems" class="nav-item noselect">
         <a [routerLink]="[menuItem.path]" routerLinkActive="router-link-active"  class="nav-link" type="button">
-          <i class="nc-icon {{menuItem.icon}}"></i>
+          <i class="{{menuItem.icon}}"></i>
           <span class="menu-title">{{menuItem.title}}</span>
         </a>
       </li>

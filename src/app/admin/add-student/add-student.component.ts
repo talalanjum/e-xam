@@ -3,7 +3,7 @@ import { StudentServiceService } from './../../services/student-service.service'
 import { GetDataService } from './../../services/get-data.service';
 import { ContactValidators } from './../../validators/contact.validators';
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormControl, Validators, FormArray } from '@angular/forms';
+import { FormGroup, FormControl, Validators, FormArray, Form, NgForm } from '@angular/forms';
 import { UsernameValidators } from 'src/app/validators/username.validators';
 import { PasswordValidators } from 'src/app/validators/password.validators';
 
@@ -14,12 +14,14 @@ import { PasswordValidators } from 'src/app/validators/password.validators';
 })
 export class AddStudentComponent implements OnInit {
 
-  
+
   constructor(
     private GetDataService: GetDataService,
     private studentService: StudentServiceService,
     private router: Router) { }
-  
+
+  hidden = true
+  selectedindex = 0
   user = localStorage.getItem('token');
   checked: boolean = false;
   dataposted: boolean = false;
@@ -28,14 +30,14 @@ export class AddStudentComponent implements OnInit {
   private courses: any = [];
 
   ngOnInit() {
+    if (this.tempclasses.at(this.selectedindex)) { 
+    } 
     this.GetDataService.getBatches().subscribe(
       result => {
         if (result) {
-          console.log("gettingresult");
           for (let data in result) {
             this.batches.push(result[data].name);
           }
-          console.log(this.batches);
         }
       }
     );
@@ -49,18 +51,6 @@ export class AddStudentComponent implements OnInit {
         }
       }
     );
-    
-    this.GetDataService.getCourses().subscribe(
-      result => {
-        if(result){
-          console.log(result);
-          for (let data in result) {
-            this.courses.push(result[data].title);
-          }
-        }
-      }
-    );
-
   }
 
   form = new FormGroup({
@@ -100,6 +90,8 @@ export class AddStudentComponent implements OnInit {
       Validators.required,
     ]),
     formcourses: new FormArray([]),
+    class_name: new FormArray([]),
+    tempclasses: new FormArray([])
   });
 
   get regno() {
@@ -132,35 +124,82 @@ export class AddStudentComponent implements OnInit {
   get semester() {
     return this.form.get('semester');
   }
-  get formcourses(){
+  get formcourses() {
     return this.form.get('formcourses');
   }
- 
-  addStudent(value) {
-    console.log(value);
-    this.studentService.addStudents(value).subscribe(res => {
-      if(res){
-        this.dataposted = true;
+  get tempclasses() {
+    return this.form.get('tempclasses') as FormArray
+  }
+
+  populateCourses() {
+    let dept = this.department.value
+    this.GetDataService.getCourseofDept(dept).subscribe(
+      result => {
+        if (result) {
+          this.courses = []
+          for (let data in result) {
+            let course = {
+              title: result[data].title,
+              course_code: result[data].course_code
+            }
+            this.courses.push(course);
+          }
+        }
       }
-      else{
-        this.dataposted=false;
+    )
+  }
+
+  addStudent(value: NgForm) { 
+    this.studentService.addStudents(value).subscribe(res => {
+      if (res) {
+        this.dataposted = true; 
+      }
+      else {
+        this.dataposted = false;
       }
     });
   }
 
-  oncheckchange(event){
-    var formArray : FormArray = this.formcourses as FormArray;
-    if(event.checked){
-      formArray.push(new FormControl(event.source.value));
-    }
-    else{
-      formArray.controls.forEach((ctrl: FormControl)=>{
-        let index = formArray.controls.indexOf(ctrl);
-        if(ctrl.value == event.source.value){
-          formArray.removeAt(index);
-          return;
+  oncheckchange(event, i) {
+    this.selectedindex = i
+    var formArray: FormArray = this.formcourses as FormArray;
+    let classarr = this.form.get('class_name') as FormArray
+    if (event.checked) {
+      this.hidden = false
+      this.GetDataService.getClassesofCourse(event.source.value).subscribe(
+        result => {
+          formArray.push(new FormControl(event.source.value));
+          let temp = this.form.get('tempclasses') as FormArray
+          temp.insert(i, new FormArray([]))
+          for (let data in result) {
+            (temp.at(i) as FormArray).push(new FormControl(result[data]))
+          }
         }
-      });
+      )
+    }
+    else {
+      let courses = this.formcourses as FormArray
+      let temp = this.form.get('tempclasses') as FormArray
+      for(let ctrl of courses.controls){
+        if(ctrl.value == event.source.value){
+          let index = courses.controls.indexOf(ctrl)
+          courses.removeAt(index)
+          temp.removeAt(index)
+        }
+      } 
+    }
+  }
+
+  selectchange(event, i) { 
+    let classarr = this.form.get('class_name') as FormArray
+    if (classarr.at(i)) { 
+      classarr.removeAt(i)
+      classarr.insert(i, new FormControl(event.target.value)) 
+    }
+    else {
+      classarr.push(new FormControl(event.target.value)) 
+    } 
+    if (!(classarr.at(i).value == event.target.value)) { 
     }
   }
 

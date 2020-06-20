@@ -12,7 +12,7 @@ export class GroupshareService {
   currentName = this.nameSource.asObservable();
 
 
-  changeName(name: string) {
+  changeName(name) {
     this.nameSource.next(name)
   }
 }

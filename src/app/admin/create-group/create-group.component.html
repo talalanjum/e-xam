@@ -63,20 +63,6 @@
                             <td mat-cell *matCellDef="let element"> {{element.department}} </td>
                         </ng-container>
 
-                        <!-- Symbol Column -->
-                        <ng-container matColumnDef="actions">
-                            <th mat-header-cell *matHeaderCellDef> Actions </th>
-                            <td mat-cell *matCellDef="let element">
-                                <i class="fas fa-user-edit p-1 text-success"
-                                    (click)="openEdit(editmodal, element.registration_number)" placement="bottom"
-                                    ngbTooltip="Edit Student"></i>
-                                <i class="fas fa-trash text-danger" (click)="deleteStudent(element.registration_number)"
-                                    placement="bottom" ngbTooltip="Delete Student"></i>
-                                <i class="fas fa-info-circle p-1 text-primary"
-                                    (click)="openDetails(detailsmodal,element.registration_number)" placement="bottom"
-                                    ngbTooltip="Edit Student"></i>
-                            </td>
-                        </ng-container>
 
                         <tr mat-header-row *matHeaderRowDef="displayedColumnsStd"></tr>
                         <tr mat-row *matRowDef="let row; columns: displayedColumnsStd;"></tr>
@@ -129,21 +115,6 @@
                         <ng-container matColumnDef="department">
                             <th mat-header-cell *matHeaderCellDef> Department </th>
                             <td mat-cell *matCellDef="let element"> {{element.department}} </td>
-                        </ng-container>
-
-                        <!-- Symbol Column -->
-                        <ng-container matColumnDef="actions">
-                            <th mat-header-cell *matHeaderCellDef> Actions </th>
-                            <td mat-cell *matCellDef="let element">
-                                <i class="fas fa-user-edit p-1 text-success"
-                                    (click)="openEdit(editmodal, element.user_id)" placement="bottom"
-                                    ngbTooltip="Edit Teacher"></i>
-                                <i class="fas fa-trash text-danger" (click)="deleteTeacher(element.user_id)"
-                                    placement="bottom" ngbTooltip="Delete Teacher"></i>
-                                <i class="fas fa-info-circle p-1 text-primary"
-                                    (click)="openDetails(detailsmodal,element.user_id)" placement="bottom"
-                                    ngbTooltip="Teacher Details"></i>
-                            </td>
                         </ng-container>
 
                         <tr mat-header-row *matHeaderRowDef="displayedColumnsTea"></tr>

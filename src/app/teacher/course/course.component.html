@@ -1,0 +1,323 @@
+<div class="grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">{{coursedata.course_name}}</h4>
+            <ngb-tabset class="tab-solid tab-solid-primary">
+                <ngb-tab>
+                    <ng-template ngbTabTitle>
+                        Assignment
+                    </ng-template>
+                    <ng-template ngbTabContent>
+                        <div class="row">
+                            <label class="col-md-1 pt-2">Class</label>
+                            <select (change)="assignmentchange($event)" class="col-md-3 form-control">
+                                <option disabled selected>Select Class</option>
+                                <option *ngFor="let class of coursedata.classes" [value]="class">{{class}}</option>
+                            </select>
+                            <button class="offset-5 btn btn-primary" [routerLink]="['/teacher/assignment/add']">Add
+                                Assignment</button>
+                        </div>
+                        <div class="row">
+                            <table mat-table [dataSource]="dataSourceAssignment" class="col-md-12">
+                                <!-- Position Column -->
+                                <ng-container matColumnDef="position">
+                                    <th mat-header-cell *matHeaderCellDef> No. </th>
+                                    <td mat-cell *matCellDef="let element"> {{element.position}} </td>
+                                </ng-container>
+
+                                <ng-container matColumnDef="name">
+                                    <th mat-header-cell *matHeaderCellDef> Name </th>
+                                    <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+                                </ng-container>
+
+                                <ng-container matColumnDef="marks">
+                                    <th mat-header-cell *matHeaderCellDef> Marks </th>
+                                    <td mat-cell *matCellDef="let element"> {{element.marks}} </td>
+                                </ng-container>
+
+                                <!-- Name Column -->
+                                <ng-container matColumnDef="classes">
+                                    <th mat-header-cell *matHeaderCellDef> Classes </th>
+                                    <td mat-cell *matCellDef="let element"> {{element.classes}} </td>
+                                </ng-container>
+
+                                <ng-container matColumnDef="due_date">
+                                    <th mat-header-cell *matHeaderCellDef> Due Date </th>
+                                    <td mat-cell *matCellDef="let element"> {{element.due_date}} </td>
+                                </ng-container>
+
+                                <ng-container matColumnDef="actions">
+                                    <th mat-header-cell *matHeaderCellDef> Actions </th>
+                                    <td mat-cell *matCellDef="let element; let j = index">
+                                        <i class="fas fa-user-edit p-1 text-success"
+                                            (click)="openEditAssignment(editassignmentmodal, element.assignment_id)"
+                                            placement="bottom" ngbTooltip="Edit Assignment"></i>
+                                        <i class="fas fa-trash text-danger"
+                                            (click)="deleteAssignment(element.assignment_id, j)" placement="bottom"
+                                            ngbTooltip="Delete Assignment"></i>
+                                        <i class="fas fa-info-circle p-1 text-primary"
+                                            (click)="downloadAssignment(element.assignment_id)" placement="bottom"
+                                            ngbTooltip="Download Assignment"></i>
+                                    </td>
+                                </ng-container>
+
+                                <tr mat-header-row *matHeaderRowDef="displayedColumnsAssignment"></tr>
+                                <tr class="rowhover" mat-row *matRowDef="let row; columns: displayedColumnsAssignment;">
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="modal-lg">
+                            <ng-template class="modal-lg" #editassignmentmodal let-modal>
+                                <div class="modal-header">
+                                    <h4 class="modal-title" id="modal-basic-title">Details for Assignment</h4>
+                                    <button type="button" class="close" aria-label="Close"
+                                        (click)="modal.dismiss('Cross click')">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <form [formGroup]="assignmentform" class="form-sample"
+                                        (ngSubmit)="updateAssignment(assignmentform.value)">
+                                        <p class="card-description">
+                                            Enter Assignment details
+                                        </p>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group row">
+                                                    <label class="col-sm-3 col-form-label">Mapping CLO</label>
+                                                    <div class="col-sm-9">
+                                                        <mat-checkbox formArrayName="mapping_CLO" class="pb-1"
+                                                            *ngFor="let clo of clos" [checked]="clo.checked"
+                                                            [value]="clo.clo" (change)="onassignmentclochange($event)">
+                                                            {{clo.clo}}
+                                                        </mat-checkbox>
+                                                        <div *ngIf="mapping_CLO.invalid && mapping_CLO.touched"
+                                                            class="alert alert-danger">CLO is required</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group row">
+                                                    <label class="col-sm-3 col-form-label">Class Name</label>
+                                                    <div class="col-sm-9">
+                                                        <mat-checkbox formArrayName="class_name_uploaded_for"
+                                                            class="pb-1" *ngFor="let class of classes"
+                                                            [checked]="class.checked" [value]="class.cls"
+                                                            (change)="onassignmentclasschange($event)">
+                                                            {{class.class}}
+                                                        </mat-checkbox>
+                                                        <div
+                                                            *ngIf="!class_name_uploaded_for.controls[0] && class_name_uploaded_for.touched">
+                                                            At least one class is required</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group row">
+                                                    <label class="col-sm-3 col-form-label">Name</label>
+                                                    <div class="col-sm-9">
+                                                        <input [(ngModel)]="assignmentData.name" formControlName="name"
+                                                            type="text" class="form-control">
+                                                        <div class="alert alert-danger"
+                                                            *ngIf="name.touched && name.invalid">
+                                                            <div *ngIf="name.errors.required">Name is required</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6 offset-6">
+                                                <div class="form-group row offset-9">
+                                                    <button [disabled]="!assignmentform.valid" type="submit"
+                                                        class="btn btn-primary btn-rounded btn-fw">Update
+                                                        Assignment</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-danger"
+                                        (click)="modal.close('Save click')">Close</button>
+                                </div>
+                            </ng-template>
+                        </div>
+                    </ng-template>
+                </ngb-tab>
+                <ngb-tab>
+                    <ng-template ngbTabTitle>
+                        Content
+                    </ng-template>
+                    <ng-template ngbTabContent>
+                        <div class="row">
+                            <label class="col-md-1 pt-2">Class</label>
+                            <select (change)="contentchange($event)" class="col-md-3 form-control">
+                                <option disabled selected>Select Class</option>
+                                <option *ngFor="let class of coursedata.classes" [value]="class">{{class}}</option>
+                            </select>
+                            <button class="offset-6 btn btn-primary" [routerLink]="['/teacher/content/add']">Add
+                                Content</button>
+                        </div>
+                        <div class="row">
+                            <table mat-table [dataSource]="dataSourceContent" class="col-md-12">
+                                <!-- Position Column -->
+                                <ng-container matColumnDef="position">
+                                    <th mat-header-cell *matHeaderCellDef> No. </th>
+                                    <td mat-cell *matCellDef="let element"> {{element.position}} </td>
+                                </ng-container>
+
+                                <ng-container matColumnDef="description">
+                                    <th mat-header-cell *matHeaderCellDef> Description </th>
+                                    <td mat-cell *matCellDef="let element"> {{element.description}} </td>
+                                </ng-container>
+
+                                <!-- Name Column -->
+                                <ng-container matColumnDef="classes">
+                                    <th mat-header-cell *matHeaderCellDef> Classes </th>
+                                    <td mat-cell *matCellDef="let element"> {{element.classes}} </td>
+                                </ng-container>
+
+                                <ng-container matColumnDef="uploaded_on">
+                                    <th mat-header-cell *matHeaderCellDef> Uploaded On </th>
+                                    <td mat-cell *matCellDef="let element"> {{element.uploaded_on}} </td>
+                                </ng-container>
+
+                                <ng-container matColumnDef="actions">
+                                    <th mat-header-cell *matHeaderCellDef> Actions </th>
+                                    <td mat-cell *matCellDef="let element; let j = index">
+                                        <i class="fas fa-user-edit p-1 text-success"
+                                            (click)="editContent(element.content_id, element.classes)"
+                                            placement="bottom" ngbTooltip="Edit Content"></i>
+                                        <i class="fas fa-trash text-danger"
+                                            (click)="deleteContent(element.content_id, j)" placement="bottom"
+                                            ngbTooltip="Delete Content"></i>
+                                        <i class="fas fa-info-circle p-1 text-primary"
+                                            (click)="downloadContent(element.content_id)" placement="bottom"
+                                            ngbTooltip="Download Content"></i>
+                                    </td>
+                                </ng-container>
+
+                                <tr mat-header-row *matHeaderRowDef="displayedColumnsContent"></tr>
+                                <tr class="rowhover" mat-row *matRowDef="let row; columns: displayedColumnsContent;">
+                                </tr>
+                            </table>
+                        </div>
+                    </ng-template>
+                </ngb-tab>
+                <ngb-tab>
+                    <ng-template ngbTabTitle>
+                        Question
+                    </ng-template>
+                    <ng-template ngbTabContent>
+                        <div class="row">
+                            <button class="offset-9 btn btn-primary" [routerLink]="['/teacher/question/add']">
+                                Add Question</button>
+                        </div>
+                        <div class="row">
+                            <table mat-table [dataSource]="dataSourceQuestion" class="col-md-12">
+                                <!-- Position Column -->
+                                <ng-container matColumnDef="position">
+                                    <th mat-header-cell *matHeaderCellDef> No. </th>
+                                    <td mat-cell *matCellDef="let element"> {{element.position}} </td>
+                                </ng-container>
+
+                                <ng-container matColumnDef="question_text">
+                                    <th mat-header-cell *matHeaderCellDef> Question </th>
+                                    <td mat-cell *matCellDef="let element"> {{element.question_text}} </td>
+                                </ng-container>
+
+                                <!-- Name Column -->
+                                <ng-container matColumnDef="type">
+                                    <th mat-header-cell *matHeaderCellDef> Type </th>
+                                    <td mat-cell *matCellDef="let element"> {{element.type}} </td>
+                                </ng-container>
+
+                                <ng-container matColumnDef="topic">
+                                    <th mat-header-cell *matHeaderCellDef> Topic </th>
+                                    <td mat-cell *matCellDef="let element"> {{element.topic}} </td>
+                                </ng-container>
+
+                                <ng-container matColumnDef="actions">
+                                    <th mat-header-cell *matHeaderCellDef> Actions </th>
+                                    <td mat-cell *matCellDef="let element; let j = index">
+                                        <i class="fas fa-user-edit p-1 text-success" placement="bottom"
+                                            (click)="openEditQuestion(element._id)" ngbTooltip="Edit Question"></i>
+                                        <i class="fas fa-trash text-danger" (click)="deleteQuestion(element._id, j)"
+                                            placement="bottom" ngbTooltip="Delete Question"></i>
+                                        <i class="fas fa-info-circle p-1 text-primary"
+                                            (click)="openDetailsQuestion(element._id, detailsmodal)" placement="bottom"
+                                            ngbTooltip="View Details"></i>
+                                    </td>
+                                </ng-container>
+
+                                <tr mat-header-row *matHeaderRowDef="displayedColumnsQuestion"></tr>
+                                <tr class="rowhover" mat-row *matRowDef="let row; columns: displayedColumnsQuestion;">
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="modal-lg">
+                            <ng-template class="modal-lg" #detailsmodal let-modal>
+                                <div class="modal-header">
+                                    <h4 class="modal-title" id="modal-basic-title">Details for Question</h4>
+                                    <button type="button" class="close" aria-label="Close"
+                                        (click)="modal.dismiss('Cross click')">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body m-3">
+                                    <div>
+                                        <p>Course Code: {{detailsDataQuestion.course_code}}</p>
+                                        <p>Topic: {{detailsDataQuestion.topic}}</p>
+                                        <p>Mapping CLO: {{detailsDataQuestion.mapping_CLO}}</p>
+                                        <p>Type: {{detailsDataQuestion.type}}</p>
+                                        <p>Question Text: {{detailsDataQuestion.question_text}}</p>
+                                        <p>Answer: {{detailsDataQuestion.answer}}</p>
+                                        <p>Uploaded By: {{detailsDataQuestion.uploaded_by}}</p>
+                                        <div *ngIf="detailsDataQuestion.type == 'MCQ' " class="row" style=" margin-left: inherit;">
+                                            <p style="display: inline;">MCQ
+                                                Options: </p>
+                                            <div style="display: inline;">
+                                                <ul *ngFor="let mcq of detailsDataQuestion.mcq_options"><p>{{mcq}}</p> </ul>
+                                            </div>
+                                        </div>
+                                        <div *ngIf="detailsDataQuestion.type == 'Descriptive' " class="row" style=" margin-left: inherit;">
+                                            <p style="display: inline;">Keywords: </p>
+                                            <div style="display: inline;">
+                                                <ul *ngFor="let keyword of detailsDataQuestion.keywords"><p>{{keyword}}</p> </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-danger"
+                                        (click)="modal.close('Save click')">Close</button>
+                                </div>
+                            </ng-template>
+                        </div>
+                    </ng-template>
+                </ngb-tab>
+                <ngb-tab>
+                    <ng-template ngbTabTitle>
+                        Quiz
+                    </ng-template>
+                    <ng-template ngbTabContent>
+                        <p>Under Production
+                        </p>
+                    </ng-template>
+                </ngb-tab>
+                <ngb-tab>
+                    <ng-template ngbTabTitle>
+                        Exam
+                    </ng-template>
+                    <ng-template ngbTabContent>
+                        <p>Under Production
+                        </p>
+                    </ng-template>
+                </ngb-tab>
+            </ngb-tabset>
+        </div>
+    </div>
+</div>

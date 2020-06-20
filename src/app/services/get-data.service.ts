@@ -17,4 +17,12 @@ export class GetDataService {
   getCourses(){
     return this.http.get(this.url+"admin/courses/all");
   }
+
+  getCourseofDept(dept){
+    return this.http.get(this.url+"admin/course/department/"+dept)
+  }
+
+  getClassesofCourse(course){
+    return this.http.get(this.url+"admin/course/classes/"+course)
+  }
 }

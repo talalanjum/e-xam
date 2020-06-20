@@ -63,8 +63,7 @@
                                                             class="fas fa-trash del-icon"></i></span>
                                                 </ng-container>
                                             </div>
-                                            <div class="alert alert-danger"
-                                                *ngIf="cls.invalid && cls.touched">
+                                            <div class="alert alert-danger" *ngIf="cls.invalid && cls.touched">
                                                 <div *ngIf="cls.errors.required">Class is
                                                     required
                                                 </div>
@@ -90,12 +89,11 @@
                                         <ng-container [formGroupName]="i"
                                             *ngFor="let clo of CLOs.controls; let i = index">
                                             <div class="pb-2" style="display: -webkit-inline-box;">
-                                                <input [formControl]="clo"  type="text" #addclo class="form-control">
+                                                <input [formControl]="clo" type="text" #addclo class="form-control">
                                                 <span class="pl-2" (click)="removeCLO(clo)"><i
                                                         class="fas fa-trash del-icon"></i></span>
                                             </div>
-                                            <div class="alert alert-danger"
-                                                *ngIf="clo.invalid && clo.touched">
+                                            <div class="alert alert-danger" *ngIf="clo.invalid && clo.touched">
                                                 <div *ngIf="clo.errors.required">CLO is required
                                                 </div>
                                             </div>
@@ -110,6 +108,31 @@
                             </div>
                         </div>
                     </div>
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="form-group row">
+                                <label class="col-sm-4 col-form-label">Departments</label>
+                                <div class="col-sm-8">
+                                    <mat-checkbox *ngFor="let dept of departments" [checked]="checked" [value]="dept"
+                                        (change)="oncheckchange($event)">
+                                        {{dept}}
+                                    </mat-checkbox>
+                                    <div class="alert-danger alert" *ngIf="!department.controls[0]">Department is required</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- <div class="col-md-5 offset-1">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">Course Name</label>
+                                <div class="col-sm-9">
+                                    <input formControlName="title" type="text" class="form-control" />
+                                    <div class="alert alert-danger" *ngIf="title.touched && title.invalid">
+                                        <div *ngIf="title.errors.required">Title is required</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div> -->
                     <div class="row">
                         <div class="col-md-6 offset-6">
                             <div class="form-group row offset-9">

@@ -4,6 +4,7 @@ import { AuthService } from '../services/auth-service.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { UsernameValidators } from '../validators/username.validators';
 import { PasswordValidators } from '../validators/password.validators';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-login-form',
@@ -11,18 +12,26 @@ import { PasswordValidators } from '../validators/password.validators';
   styleUrls: ['./login-form.component.scss']
 })
 export class LoginFormComponent implements OnInit {
-  ngOnInit(){
-    
+  spinner: boolean = false;
+  message = "Signing In..";
+  // where is authorization call to api? 
+  ngOnInit() {
+
   }
 
   invalidLogin: Boolean;
 
   constructor(private router: Router,
-    private authService: AuthService) {
+    private authService: AuthService,
+    private toastr: ToastrService
+  ) 
+  {
 
   }
+
+
   form = new FormGroup({
-    username: new FormControl('', [
+    user_id: new FormControl('', [
       Validators.required,
       UsernameValidators.cannotContainSpace,
     ]),
@@ -38,7 +47,7 @@ export class LoginFormComponent implements OnInit {
 
 
   get username() {
-    return this.form.get('username');
+    return this.form.get('user_id');
   }
 
   get password() {
@@ -50,29 +59,66 @@ export class LoginFormComponent implements OnInit {
   }
 
   signin(credentials) {
-    console.log(credentials.role);
-    
-    if(credentials.role=="Admin"){
+    this.spinner = true;
+    if (credentials.role == "Admin") {
+      this.authService.login(credentials)
+        .subscribe(result => {
+          if (result) { 
+            
+           
+            this.router.navigate(["admin"]);
+            this.toastr.success('Hello world!', 'Toastr fun!', {
+              timeOut: 200000
+            });
+            this.spinner = false;
+          }
+          else {
+            this.invalidLogin = true;
+            this.spinner = false;
+
+          }
+        }
+        );
+    }
+    if (credentials.role == "Student") {
       this.authService.login(credentials)
       .subscribe(result => {
         if (result) {
-          this.router.navigateByUrl("admin");
+          
+          this.router.navigate(["student"]); 
+          this.toastr.success('Hello world!', 'Toastr fun!', {
+            timeOut: 200000
+          });
+          this.spinner = false;
+
         }
         else {
           this.invalidLogin = true;
+          this.spinner = false;
+
         }
       }
-      );    
+      );
     }
-    if(credentials.role=="Student"){
-      
-    }
-    if(credentials.role=="Teacher"){
-      
+    if (credentials.role == "Teacher") {
+      this.authService.login(credentials)
+      .subscribe(result => {
+        if (result) {
+          this.router.navigate(["teacher"]);
+          this.spinner = false;
+
+        }
+        else {
+          this.invalidLogin = true;
+          this.spinner = false;
+
+        }
+      }
+      );
     }
   }
 
-  signout(){
+  signout() {
     this.authService.logout;
   }
 

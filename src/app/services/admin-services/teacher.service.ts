@@ -17,7 +17,7 @@ export class TeacherService {
   }
   
   deleteTeacher(id){
-    return this.http.delete(this.url+"admin/teacher/remove_teacher"+id);
+    return this.http.delete(this.url+"admin/teacher/remove_teacher/"+id);
   }
   
   addTeacher(data){

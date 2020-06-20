@@ -1,3 +1,6 @@
+import { ExamComponent } from './exam/exam.component';
+import { QuizComponent } from './quiz/quiz.component';
+import { GroupchatComponent } from './groupchat/groupchat.component';
 import { SettingsComponent } from './settings/settings.component';
 import { CourseDetailComponent } from './course-detail/course-detail.component';
 
@@ -16,22 +19,12 @@ const routes: Routes = [
       path: '',
       children: [
         { path: 'course_menu/list', component: CourseListComponent },
-        { path: 'course_menu/details', component: CourseDetailComponent },
+        { path: 'course_menu/course', component: CourseDetailComponent },
+        { path: 'exam', component: ExamComponent },
+        { path: 'quiz', component: QuizComponent },
         { path: 'group_menu/list', component: GroupListComponent },
-        { path: 'group_menu/group', component: CourseListComponent },
+        { path: 'group_menu/chat', component: GroupchatComponent },
         { path: 'settings', component: SettingsComponent },
-        //  { path: 'manage_students/listall', component: StudentListComponent},
-        //  { path: 'manage_students', redirectTo:"/admin/manage_students/listall", pathMatch:'full'},
-        //  { path: 'manage_teachers/add', component: AddTeacherComponent},
-        //  { path: 'manage_teachers/listall', component: TeacherListComponent},
-        //  { path: 'manage_teachers', redirectTo:"/admin/manage_teachers/listall", pathMatch:'full'},
-        //  { path: 'manage_courses/add', component: AddCourseComponent},         
-        //  { path: 'manage_courses/listall', component: CourseListComponent},
-        //  { path: 'manage_courses/', redirectTo:"/admin/manage_courses/listall", pathMatch:'full'},
-        //  { path: 'manage_groups/add', component: CreateGroupComponent},         
-        //  { path: 'manage_groups/listall', component: GroupListComponent},
-        //  { path: 'manage_groups/', redirectTo:"/admin/manage_groups/listall", pathMatch:'full'},
-        //  { path: 'settings', component: SettingsComponent},
 
       ]
     }]

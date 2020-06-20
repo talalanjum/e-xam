@@ -9,7 +9,7 @@ export class StudentServiceService {
   constructor(private http: HttpClient) { }
 
   addStudents(data){
-    return this.http.post(this.url+"admin/insert_student", data, {headers:{'Content-Type':'application/json'}});
+    return this.http.post(this.url+"admin/insert_student", data);
   }
 
   getBatchStudents(batch){

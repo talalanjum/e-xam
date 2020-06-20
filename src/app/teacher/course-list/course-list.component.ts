@@ -1,5 +1,20 @@
-import { Component, OnInit } from '@angular/core';
+import { ToastrModule, ToastrService } from 'ngx-toastr';
+import { CourseshareService } from './../../services/teacher-services/courseshare.service';
 
+import { FormGroup, FormControl } from '@angular/forms';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { MatPaginator, MatTableDataSource } from '@angular/material';
+import { CourseService } from 'src/app/services/admin-services/course.service';
+import { TeacherCourseService } from 'src/app/services/teacher-services/course.service';
+import { Router } from '@angular/router';
+
+interface PeriodicElement {
+  position: any;
+  course_code: any;
+  course_name: any;
+  classes: any[];
+  clos: any[]
+}
 @Component({
   selector: 'app-course-list',
   templateUrl: './course-list.component.html',
@@ -7,9 +22,58 @@ import { Component, OnInit } from '@angular/core';
 })
 export class CourseListComponent implements OnInit {
 
-  constructor() { }
+  @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
+  ELEMENT_DATA: PeriodicElement[] = [];
+  displayedColumns: string[] = ['position', 'course_code', 'course_name'];
+  dataSource
+  form = new FormGroup({
+    content: new FormControl([])
+  })
+
+  constructor(
+    private courseservice: TeacherCourseService,
+    private admincourseservice: CourseService,
+    private router: Router,
+    private toastr: ToastrService,
+    private courseshare: CourseshareService
+  ) { }
+
+  applyFilter(filterValue: string) {
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+  }
 
   ngOnInit() {
+    this.toastr.success('Hello world!', 'Toastr fun!');
+
+    this.courseservice.getCourses().subscribe(
+      result => {
+        let position = 1
+        for (let data in result['courses']) {
+          this.admincourseservice.getCourseCode(result['courses'][data].course_code).subscribe(
+            res => {
+              let course: PeriodicElement = {
+                position: position,
+                course_code: result['courses'][data].course_code,
+                course_name: res['title'],
+                classes: result['courses'][data].class_name,
+                clos: res['CLO']
+              }
+              this.ELEMENT_DATA.push(course)
+              position++
+            }
+          )
+        }
+        setTimeout(() => {
+          this.dataSource = new MatTableDataSource(this.ELEMENT_DATA)
+          this.dataSource.paginator = this.paginator;
+        }, 1500)
+      }
+    )
+  }
+
+  navigateCourse(row){
+    this.courseshare.changeData(row)
+    this.router.navigate(['/teacher/course_menu/course'])
   }
 
 }

@@ -10,25 +10,25 @@ export interface RouteInfo {
 }
 
 const routes : RouteInfo[] = [
-  { path: '', title: 'Student', icon: 'menu-icon mdi mdi-television', class: '', 
+  { path: '', title: 'Student', icon: 'menu-icon fas fa-user-graduate', class: '', 
     dropdown: [
-      { path: 'manage_students/add', title: 'Add Student', icon: 'menu-icon mdi mdi-notification-clear-all', class: '', dropdown: [] },
-      { path: 'manage_students/listall', title: 'View Students List', icon: 'menu-icon mdi mdi-notification-clear-all', class: '', dropdown: [] },
+      { path: 'manage_students/add', title: 'Add Student', icon: 'menu-icon fas fa-user-plus', class: '', dropdown: [] },
+      { path: 'manage_students/listall', title: 'View Students List', icon: 'menu-icon fas fa-list-ol', class: '', dropdown: [] },
     ] },
-  { path: '', title: 'Teacher', icon: 'menu-icon mdi mdi-notification-clear-all', class: '',
+  { path: '', title: 'Teacher', icon: 'menu-icon fas fa-chalkboard-teacher', class: '',
      dropdown: [
-      { path: 'manage_teachers/add', title: 'Add Teacher', icon: 'menu-icon mdi mdi-notification-clear-all', class: '', dropdown: [] },
-      { path: 'manage_teachers/listall', title: 'View Teachers List', icon: 'menu-icon mdi mdi-notification-clear-all', class: '', dropdown: [] },
+      { path: 'manage_teachers/add', title: 'Add Teacher', icon: 'menu-icon fas fa-user-plus', class: '', dropdown: [] },
+      { path: 'manage_teachers/listall', title: 'View Teachers List', icon: 'menu-icon fas fa-list-ol', class: '', dropdown: [] },
      ] },
-  { path: '', title: 'Course', icon: 'menu-icon mdi mdi-television', class: '', 
+  { path: '', title: 'Course', icon: 'menu-icon fas fa-book', class: '', 
     dropdown: [
-      { path: 'manage_courses/add', title: 'Add Course', icon: 'menu-icon mdi mdi-notification-clear-all', class: '', dropdown: [] },
-      { path: 'manage_courses/listall', title: 'View Courses List', icon: 'menu-icon mdi mdi-notification-clear-all', class: '', dropdown: [] },
+      { path: 'manage_courses/add', title: 'Add Course', icon: 'menu-icon fas fa-folder-plus', class: '', dropdown: [] },
+      { path: 'manage_courses/listall', title: 'View Courses List', icon: 'menu-icon fas fa-list-ol', class: '', dropdown: [] },
     ] },
-  { path: '', title: 'Group', icon: 'fas fa-pen-square', class: '', 
+  { path: '', title: 'Group', icon: 'menu-icon fas fa-users', class: '', 
     dropdown: [
-      { path: 'manage_groups/add', title: 'Create Group', icon: 'menu-icon mdi mdi-notification-clear-all', class: '', dropdown: [] },
-      { path: 'manage_groups/listall', title: 'View Groups List', icon: 'menu-icon mdi mdi-notification-clear-all', class: '', dropdown: [] },
+      { path: 'manage_groups/add', title: 'Create Group', icon: 'menu-icon fas fa-users-cog', class: '', dropdown: [] },
+      { path: 'manage_groups/listall', title: 'View Groups List', icon: 'menu-icon fas fa-list-ol', class: '', dropdown: [] },
     ] },
 ]
 
@@ -46,8 +46,8 @@ export class AdminSidebarComponent implements OnInit {
 
   public samplePagesCollapsed = true;
   public menuItems: any[];
-  user = "admin";
-  // user = localStorage.getItem('token');
+  // user = "admin";
+  user = localStorage.getItem('token');
   role;
   constructor(private router: Router) { }
 

@@ -1,13 +1,14 @@
 import { GroupshareService } from './../../services/admin-services/groupshare.service';
 import { GroupService } from './../../services/admin-services/group.service';
-import { Component, OnInit } from '@angular/core';
-import { MatTableDataSource } from '@angular/material';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { MatTableDataSource, MatPaginator } from '@angular/material';
 import { Router } from '@angular/router';
 
 interface PeriodicElement {
   position: any;
   name: any;
   id: any;
+  members: any;
 }
 
 @Component({
@@ -16,7 +17,7 @@ interface PeriodicElement {
   styleUrls: ['./group-list.component.scss']
 })
 export class GroupListComponent implements OnInit {
-
+  @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
   ELEMENT_DATA: PeriodicElement[] = [];
   displayedColumns: string[] = ['position', 'name', 'actions'];
   dataSource
@@ -47,17 +48,20 @@ export class GroupListComponent implements OnInit {
         position: position,
         id : item._id,
         name: item.name,
+        members: item.members
       }
       this.ELEMENT_DATA.push(group)
       position++
     }
     this.dataSource = new MatTableDataSource(this.ELEMENT_DATA);
+    this.dataSource.paginator = this.paginator;
   }
 
-  deleteGroup(id){
+  deleteGroup(id, index){
     this.groupService.deleteGroup(id).subscribe(
-      result=>{
-        console.log(result)
+      result=>{ 
+        this.dataSource.data.splice(index, 1)
+        this.dataSource._updateChangeSubscription()
       }
     )
   }

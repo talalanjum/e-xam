@@ -1,0 +1,205 @@
+import { Component, OnInit, ViewChild, AfterViewInit, Input } from '@angular/core';
+import { DataService } from 'src/app/common/data.service';
+import { DataShareService } from 'src/app/common/data.share.service';
+import { Location } from '@angular/common';
+import { MatTableDataSource, MatPaginator, MatSort } from '@angular/material';
+import { CommonFunctions } from 'src/app/common/common.functions';
+import { FlashMessagesService } from 'angular2-flash-messages';
+import { element } from 'protractor';
+
+@Component({
+  selector: 'app-view-status-logs',
+  templateUrl: './view-status-logs.component.html',
+  styleUrls: ['./view-status-logs.component.scss']
+})
+export class ViewStatusLogsComponent implements OnInit, AfterViewInit {
+  currentData = [];
+  modelsData = [];
+  dataStatusArray = [];
+  selectedDataIndex = 0;
+  disablePrev = false;
+  disableNext = false;
+  showCard = false;
+  showList = false;
+  showHeader = true;
+  user: any;
+  showSpinner: boolean;
+
+  dataSource: MatTableDataSource<any>;
+  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator;
+  @ViewChild(MatSort, { static: false }) sort: MatSort;
+  @Input() message = '';
+
+  displayedColumns = ['model', 'record', 'dateTime', 'description', 'period'];
+  toggle: boolean;
+
+
+  constructor(private _dataService: DataService,
+    private _sharedService: DataShareService,
+    private _location: Location, private _helperFunctions: CommonFunctions,
+    private _flashMessageService: FlashMessagesService
+  ) { }
+
+  ngAfterViewInit(): void {
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+  }
+
+  ngOnInit() {
+    this.user = this._sharedService.getUser();
+    this.dataSource = new MatTableDataSource;
+
+    this._sharedService.setCurrentScreen('home');
+    if (this.user.department != "IT") {
+      var params = { departmentId: this.user.departmentId };
+      // console.log("params= ", params)
+    }
+    var data = this._helperFunctions.convertJsonToArray(params);
+
+    console.log("query for getDataStatus()= ", data)
+    this.showSpinner = true;
+    this.message = "Loading..";
+
+    this._dataService.getDataStatus(data).subscribe((res: any) => {
+      this.modelsData = res.data;
+      console.log("getDataStatus() res= ", res.data);
+      if (res.data.length == 1) {
+        this.disableNext = true;
+        this.disablePrev = true;
+      }
+      this.showSpinner = false;
+
+      for (var i = 0; i < this.modelsData.length; i++) {
+        for (var j = 0; j < this.modelsData[i].records.length; j++) {
+          var record = new Object();
+          record['month'] = this.modelsData[i].month;
+          record['year'] = this.modelsData[i].year;
+          record['model'] = this.modelsData[i].models[j];
+          record['record'] = this.modelsData[i].records[j];
+          record['description'] = this.modelsData[i].description[j];
+          record['dateTime'] = this.modelsData[i].dateTime[j];
+          record['status'] = this.modelsData[i].status[j];
+          this.dataSource.data.push(record);
+        }
+        this.createStatusArray(this.modelsData[i]);
+        this.dataSource.paginator = this.paginator;
+
+      }
+      console.log("this.dataStatusArray= ", this.dataStatusArray)
+      if (this.modelsData.length > 0) {
+        //converting month number to string January = 01
+        for (let i = 0; i < this.dataStatusArray.length; i++) {
+          this.dataStatusArray[i].month = this._helperFunctions.getMonthObject(this.dataStatusArray[i].month - 1).viewValue;
+
+        }
+        // console.log("DATA STATUS ARRAY ",this.dataStatusArray);
+        this.currentData = this.dataStatusArray[this.dataStatusArray.length - 1];
+        this.selectedDataIndex = this.dataStatusArray.length - 1;
+      }
+    }, err => {
+      this.showSpinner = false;
+      console.log("ERROR in getDataStatus()= ", err.message);
+      this._flashMessageService.show('getDataStatus api failed to execute.', { cssClass: 'alert-danger', timeout: 5000 });
+    })
+    this.disableNext = true;
+  }
+
+  createStatusArray(elem) {
+    var found: boolean = false;
+    var obj: any = new Object();
+    
+    for (var i = 0; i < this.dataStatusArray.length; i++) {
+      if (this.dataStatusArray[i].month == elem.month && this.dataStatusArray[i].year == elem.year) {
+        found = true;
+        break;
+      }
+    }
+    if (found) {
+      this.dataStatusArray[i].data.push({
+        departmentName: elem.departmentName,
+        records: elem.records,
+        models: elem.models,
+        status: elem.status,
+        description: elem.description
+      });
+    } else {
+      obj.month = elem.month;
+      obj.year = elem.year;
+      obj.data = [{
+        departmentName: elem.departmentName,
+        records: elem.records,
+        models: elem.models,
+        status: elem.status,
+        description: elem.description
+      }];
+      this.dataStatusArray.push(obj);
+    }
+
+  }
+
+  prevDiv() {
+
+    if (this.dataStatusArray.length != 0) {
+      this.selectedDataIndex--;
+      this.disableNext = false;
+
+      if (this.selectedDataIndex < 0) {
+        this.selectedDataIndex = 0;
+      }
+      if (this.selectedDataIndex == 0) {
+        this.disablePrev = true;
+        this.disableNext = false;
+      }
+
+      this.currentData = this.dataStatusArray[this.selectedDataIndex];
+
+    }
+  }
+
+
+  nextDiv() {
+
+    if (this.dataStatusArray.length != 0) {
+      this.selectedDataIndex++;
+      this.disablePrev = false;
+
+      if (this.selectedDataIndex > this.dataStatusArray.length - 1) {
+        this.selectedDataIndex = this.dataStatusArray.length - 1;
+
+      }
+      if (this.selectedDataIndex + 1 == this.dataStatusArray.length) {
+        this.disableNext = true;
+        this.disablePrev = false;
+
+      }
+
+      this.currentData = this.dataStatusArray[this.selectedDataIndex];
+
+    }
+  }
+  selectView(view) {
+    if (view == 'list') {
+      this.showList = true;
+      this.showHeader = false;
+      this.showCard = false;
+    }
+    else if (view == 'header') {
+      this.showList = false;
+      this.showHeader = true;
+      this.showCard = false;
+    }
+    else if (view == 'card') {
+      this.showList = false;
+      this.showHeader = false;
+      this.showCard = true;
+    }
+    this.toggle = !this.toggle;
+  }
+
+  doFilter(value: string) {
+    this.dataSource.filter = value.trim().toLocaleLowerCase();
+  }
+  backClicked() {
+    this._location.back();
+  }
+}

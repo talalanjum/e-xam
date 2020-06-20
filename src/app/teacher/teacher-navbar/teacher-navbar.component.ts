@@ -10,7 +10,7 @@ import { AuthService } from 'src/app/services/auth-service.service';
 })
 export class TeacherNavbarComponent implements OnInit {
 
-  user = "Teacher"
+  user = localStorage.getItem('token')
   public sidebarOpened = false;
   toggleOffcanvas() {
     this.sidebarOpened = !this.sidebarOpened;

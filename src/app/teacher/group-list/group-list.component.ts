@@ -36,7 +36,7 @@ export class GroupListComponent implements OnInit {
   ngOnInit() {
     this.groupService.getGroups().subscribe(
       result=>{
-        this.populateTable(result)
+        this.populateTable(result) 
       }
     )
   }
