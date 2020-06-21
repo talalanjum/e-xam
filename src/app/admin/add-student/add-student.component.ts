@@ -28,6 +28,7 @@ export class AddStudentComponent implements OnInit {
   private batches: any = [];
   private departments: any = [];
   private courses: any = [];
+  spinner
 
   ngOnInit() {
     if (this.tempclasses.at(this.selectedindex)) { 
@@ -150,12 +151,16 @@ export class AddStudentComponent implements OnInit {
   }
 
   addStudent(value: NgForm) { 
+    this.spinner = true
     this.studentService.addStudents(value).subscribe(res => {
       if (res) {
         this.dataposted = true; 
+        this.spinner = false
+        this.form.reset()
       }
       else {
         this.dataposted = false;
+        this.spinner = false;
       }
     });
   }

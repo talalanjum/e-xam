@@ -1,8 +1,8 @@
 <div class="mainbg p-4">
     <h1>
-       <b>
-        <span style="color: blue;">E</span>-<span style="color: red;">XAM</span>
-       </b>, easier exams!
+        <b>
+            <span style="color: blue;">E</span>-<span style="color: red;">XAM</span>
+        </b>, easier exams!
     </h1>
     <h6> The ultimate exam portal for students and teachers.</h6>
     <div class="container offset-7 col-md-5">
@@ -18,14 +18,13 @@
                     [formGroup]="form">
                     <!-- Email -->
                     <div class="md-form mb-4 mt-4">
-                        <input formControlName="user_id" type="text" class="form-control"
-                            placeholder="Username">
+                        <input formControlName="user_id" type="text" class="form-control" placeholder="Username">
                         <div *ngIf="username.invalid && username.touched" class="alert alert-danger">
                             <div *ngIf="username.errors.required">Username is required</div>
                             <div *ngIf="username.errors.cannotContainSpace">Username cannot contain space</div>
                         </div>
                     </div>
-    
+
                     <!-- Password -->
                     <div class="md-form mb-4 mt-4">
                         <input formControlName="password" id="password" placeholder="Password" class="form-control"
@@ -35,7 +34,7 @@
                             <div *ngIf="password.errors.cannotContainSpace">Password cannot contain space</div>
                         </div>
                     </div>
-    
+
                     <div class="md-form mb-4 mt-4">
                         <input #one formControlName="role" required value="Admin" type="radio" name="role"><label
                             class="mr-4">Admin</label>
@@ -49,15 +48,14 @@
                             Role is required
                         </div>
                     </div>
-    
+
                     <div class="d-flex justify-content-around">
-                        <div *ngIf="invalidLogin"
-                            class="alert alert-fill-danger" role="alert">
+                        <div *ngIf="invalidLogin" class="alert alert-fill-danger" role="alert">
                             <i class="mdi mdi-alert-circle"></i>
                             Incorrect Username or password
                         </div>
                     </div>
-    
+
                     <!-- Sign in button -->
                     <button class="btn btn-outline-info btn-rounded btn-block my-4 waves-effect z-depth-0" type="submit"
                         [disabled]="!f.valid">Sign in</button>
@@ -68,21 +66,21 @@
 </div>
 <div class="container" class="spinner-wrapper" *ngIf="spinner">
     <div class="row">
-      <div id="loader">
-        <div class="dot"></div>
-        <div class="dot"></div>
-        <div class="dot"></div>
-        <div class="dot"></div>
-        <div class="dot"></div>
-        <div class="dot"></div>
-        <div class="dot"></div>
-        <div class="dot"></div>
-        <div class="loading"></div>
-      </div>
-  
-      
+        <div id="loader">
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="loading"></div>
+        </div>
+
+
     </div>
     <p class="spinner-message">
         {{message}}
-      </p>
-  </div>
+    </p>
+</div>

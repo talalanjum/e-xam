@@ -43,35 +43,39 @@ export class CourseListComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.toastr.success('Hello world!', 'Toastr fun!');
+    // this.toastr.success('Hello world!', 'Toastr fun!');
 
     this.courseservice.getCourses().subscribe(
       result => {
-        let position = 1
-        for (let data in result['courses']) {
-          this.admincourseservice.getCourseCode(result['courses'][data].course_code).subscribe(
-            res => {
-              let course: PeriodicElement = {
-                position: position,
-                course_code: result['courses'][data].course_code,
-                course_name: res['title'],
-                classes: result['courses'][data].class_name,
-                clos: res['CLO']
+        if (result) {
+          let position = 1
+          for (let data in result['courses']) {
+            this.admincourseservice.getCourseCode(result['courses'][data].course_code).subscribe(
+              res => {
+                if (res) {
+                  let course: PeriodicElement = {
+                    position: position,
+                    course_code: result['courses'][data].course_code,
+                    course_name: res['title'],
+                    classes: result['courses'][data].class_name,
+                    clos: res['CLO']
+                  }
+                  this.ELEMENT_DATA.push(course)
+                  position++
+                }
               }
-              this.ELEMENT_DATA.push(course)
-              position++
-            }
-          )
+            )
+          }
+          setTimeout(() => {
+            this.dataSource = new MatTableDataSource(this.ELEMENT_DATA)
+            this.dataSource.paginator = this.paginator;
+          }, 1500)
         }
-        setTimeout(() => {
-          this.dataSource = new MatTableDataSource(this.ELEMENT_DATA)
-          this.dataSource.paginator = this.paginator;
-        }, 1500)
       }
     )
   }
 
-  navigateCourse(row){
+  navigateCourse(row) {
     this.courseshare.changeData(row)
     this.router.navigate(['/teacher/course_menu/course'])
   }

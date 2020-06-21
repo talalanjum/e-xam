@@ -26,6 +26,8 @@
         <a class="nav-link" type="button" (click)="togglestd()">
           <i class="{{menuItem.icon}}"></i>
           <span class="menu-title">{{menuItem.title}}</span>
+          <i class="fa fa-chevron-down"></i>
+
         </a>
         <div *ngIf="showstd" class="offset-1">
           <li routerLinkActive="active" class="noselect" *ngFor="let dropdown of menuItem.dropdown">
@@ -39,8 +41,11 @@
 
       <ng-template #teaDropdown>
         <a class="nav-link" type="button" (click)="toggletea()">
+
           <i class="{{menuItem.icon}}"></i>
           <span class="menu-title">{{menuItem.title}}</span>
+          <i class="fa fa-chevron-down"></i>
+
         </a>
         <div *ngIf="showtea" class="offset-1">
           <li routerLinkActive="active" class="noselect" *ngFor="let dropdown of menuItem.dropdown">
@@ -54,8 +59,11 @@
 
       <ng-template #crDropdown>
         <a class="nav-link" type="button" (click)="togglecr()">
+
           <i class="nc-icon {{menuItem.icon}}"></i>
           <span class="menu-title">{{menuItem.title}}</span>
+          <i class="fa fa-chevron-down"></i>
+
         </a>
         <div *ngIf="showcr" class="offset-1">
           <li routerLinkActive="active" class="noselect" *ngFor="let dropdown of menuItem.dropdown">
@@ -70,7 +78,10 @@
       <ng-template #grDropdown>
         <a class="nav-link" type="button" (click)="togglegr()">
           <i class="nc-icon {{menuItem.icon}}"></i>
+
           <span class="menu-title">{{menuItem.title}}</span>
+          <i class="fa fa-chevron-down"></i>
+
         </a>
         <div *ngIf="showgr" class="offset-1">
           <li routerLinkActive="active" class="noselect" *ngFor="let dropdown of menuItem.dropdown">

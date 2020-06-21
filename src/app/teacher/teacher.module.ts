@@ -21,6 +21,7 @@ import { CourseComponent } from './course/course.component';
 import { Ng2SearchPipeModule } from 'ng2-search-filter';
 import { ContentEditComponent } from './content-edit/content-edit.component';
 import { EditQuestionComponent } from './edit-question/edit-question.component';
+import { AddQuizComponent } from './add-quiz/add-quiz.component';
 
 @NgModule({
   declarations: [
@@ -36,7 +37,8 @@ import { EditQuestionComponent } from './edit-question/edit-question.component';
     GroupchatComponent,
     CourseComponent,
     ContentEditComponent,
-    EditQuestionComponent
+    EditQuestionComponent,
+    AddQuizComponent
   ],
   imports: [
     CommonModule,

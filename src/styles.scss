@@ -49,18 +49,26 @@
 @import "./assets/styles/misc";
 @import "./assets/styles/utilities";
 @import "./assets/styles/demo";
+@import "~ngx-toastr/toastr-bs4-alert";
+@import "~ngx-toastr/toastr.css";
+
+
 /* You can add global styles to this file, and also import other style files */
-$footer-bg : rgb(207, 136, 136);
-$sidebar-light-bg: #8edcdd;
-$main-bg: #5ca6be;
+$footer-bg : #386a8dd3;
+$sidebar-light-bg: #a1e4e6;
+$main-bg: #3078ac;
 html,
 body {
   height: 100%;
+  background: rgb(185, 185, 185);
+ margin: 0;
+  font-family: Domine, "Helvetica Neue", sans-serif;
 }
-body {
-  margin: 0;
-  font-family: Roboto, "Helvetica Neue", sans-serif;
+content-wrapper{
+  background: rgb(185, 185, 185);
+
 }
+
 i:hover{
     cursor: pointer;
 }
@@ -209,7 +217,7 @@ i:hover{
 .spinner-message {
   text-align: center;
 margin-top: 15%;
-margin-left:5%;
+margin-left:4%;
 }
 .spinner-wrapper {
   position: fixed;

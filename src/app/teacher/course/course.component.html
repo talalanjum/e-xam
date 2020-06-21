@@ -212,7 +212,7 @@
                         Question
                     </ng-template>
                     <ng-template ngbTabContent>
-                        <div class="row">
+                        <div class="row justify-content-end">
                             <button class="offset-9 btn btn-primary" [routerLink]="['/teacher/question/add']">
                                 Add Question</button>
                         </div>
@@ -304,8 +304,57 @@
                         Quiz
                     </ng-template>
                     <ng-template ngbTabContent>
-                        <p>Under Production
-                        </p>
+                        <div class="row">
+                            <label class="col-md-1 pt-2">Class</label>
+                            <select (change)="quizclasschange($event)" class="col-md-3 form-control">
+                                <option disabled selected>Select Class</option>
+                                <option *ngFor="let class of coursedata.classes" [value]="class">{{class}}</option>
+                            </select>
+                            <button class="offset-6 btn btn-primary" [routerLink]="['/teacher/quiz/add']">
+                                Add Quiz</button>
+                        </div>
+                        <!-- <div class="row">
+                            <table mat-table [dataSource]="dataSourceContent" class="col-md-12">
+                                <ng-container matColumnDef="position">
+                                    <th mat-header-cell *matHeaderCellDef> No. </th>
+                                    <td mat-cell *matCellDef="let element"> {{element.position}} </td>
+                                </ng-container>
+
+                                <ng-container matColumnDef="description">
+                                    <th mat-header-cell *matHeaderCellDef> Description </th>
+                                    <td mat-cell *matCellDef="let element"> {{element.description}} </td>
+                                </ng-container>
+
+                                <ng-container matColumnDef="classes">
+                                    <th mat-header-cell *matHeaderCellDef> Classes </th>
+                                    <td mat-cell *matCellDef="let element"> {{element.classes}} </td>
+                                </ng-container>
+
+                                <ng-container matColumnDef="uploaded_on">
+                                    <th mat-header-cell *matHeaderCellDef> Uploaded On </th>
+                                    <td mat-cell *matCellDef="let element"> {{element.uploaded_on}} </td>
+                                </ng-container>
+
+                                <ng-container matColumnDef="actions">
+                                    <th mat-header-cell *matHeaderCellDef> Actions </th>
+                                    <td mat-cell *matCellDef="let element; let j = index">
+                                        <i class="fas fa-user-edit p-1 text-success"
+                                            (click)="editContent(element.content_id, element.classes)"
+                                            placement="bottom" ngbTooltip="Edit Content"></i>
+                                        <i class="fas fa-trash text-danger"
+                                            (click)="deleteContent(element.content_id, j)" placement="bottom"
+                                            ngbTooltip="Delete Content"></i>
+                                        <i class="fas fa-info-circle p-1 text-primary"
+                                            (click)="downloadContent(element.content_id)" placement="bottom"
+                                            ngbTooltip="Download Content"></i>
+                                    </td>
+                                </ng-container>
+
+                                <tr mat-header-row *matHeaderRowDef="displayedColumnsContent"></tr>
+                                <tr class="rowhover" mat-row *matRowDef="let row; columns: displayedColumnsContent;">
+                                </tr>
+                            </table>
+                        </div> -->
                     </ng-template>
                 </ngb-tab>
                 <ngb-tab>

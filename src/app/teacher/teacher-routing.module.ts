@@ -11,6 +11,7 @@ import { GroupListComponent } from './group-list/group-list.component';
 import { CourseComponent } from './course/course.component';
 import { ContentEditComponent } from './content-edit/content-edit.component';
 import { EditQuestionComponent } from './edit-question/edit-question.component';
+import { AddQuizComponent } from './add-quiz/add-quiz.component';
 
 
 const routes: Routes = [
@@ -27,6 +28,7 @@ const routes: Routes = [
         { path: 'content/add', component: AddContentComponent},
         { path: 'assignment/add', component: AddAssignmentComponent},
         { path: 'question/add', component: AddQuestionComponent},
+        { path: 'quiz/add', component: AddQuizComponent},
         { path: 'course_menu/edit_content', component: ContentEditComponent},
         { path: 'course_menu/edit_question', component: EditQuestionComponent}
       ]

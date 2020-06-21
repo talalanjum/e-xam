@@ -1,3 +1,4 @@
+import { QuizService } from './../../services/teacher-services/quiz.service';
 import { QuestionshareService } from './../../services/teacher-services/questionshare.service';
 import { ContentshareService } from './../../services/teacher-services/contentshare.service';
 import { TeacherCourseService } from 'src/app/services/teacher-services/course.service';
@@ -53,6 +54,10 @@ export class CourseComponent implements OnInit {
     name: ''
   }
 
+  ELEMENT_DATA_quiz = []
+  displayedColumnsQuiz: string[] = ['position','quiz_id', 'class_id', 'course_id', 'actions'];
+  dataSourceQuiz
+
   constructor(
     private courseshare: CourseshareService,
     private contentservice: ContentService,
@@ -62,7 +67,8 @@ export class CourseComponent implements OnInit {
     private courseservce: TeacherCourseService,
     private router: Router,
     private contentshare: ContentshareService,
-    private questionshare: QuestionshareService
+    private questionshare: QuestionshareService,
+    private quizservice: QuizService
   ) {
     this.modalOptions = {
       backdrop: 'static',
@@ -393,5 +399,17 @@ export class CourseComponent implements OnInit {
       }
     }
     this.router.navigate(['teacher/course_menu/edit_question'])
+  }
+
+  quizclasschange(event){
+    this.quizservice.getQuizzes(event.target.value, this.coursedata.course_code).subscribe(
+      result=>{
+        console.log(result)
+        // for(let data in result){
+        //   let quiz = result[data]
+        //   this.ELEMENT_DATA_quiz.push(quiz)
+        // }
+      }
+    )
   }
 }
