@@ -51,18 +51,21 @@
 @import "./assets/styles/demo";
 @import "~ngx-toastr/toastr-bs4-alert";
 @import "~ngx-toastr/toastr.css";
-
-
 /* You can add global styles to this file, and also import other style files */
 $footer-bg : #386a8dd3;
-$sidebar-light-bg: #a1e4e6;
+$sidebar-light-bg: #83d5d8;
 $main-bg: #3078ac;
 html,
 body {
   height: 100%;
   background: rgb(185, 185, 185);
- margin: 0;
+
+}
+body {
+  margin: 0;
   font-family: Domine, "Helvetica Neue", sans-serif;
+  background: rgb(185, 185, 185);
+
 }
 content-wrapper{
   background: rgb(185, 185, 185);

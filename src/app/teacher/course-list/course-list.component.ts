@@ -29,6 +29,8 @@ export class CourseListComponent implements OnInit {
   form = new FormGroup({
     content: new FormControl([])
   })
+  spinner = false;
+  message = "Fetching data.."
 
   constructor(
     private courseservice: TeacherCourseService,
@@ -44,6 +46,7 @@ export class CourseListComponent implements OnInit {
 
   ngOnInit() {
     // this.toastr.success('Hello world!', 'Toastr fun!');
+    this.spinner = true;
 
     this.courseservice.getCourses().subscribe(
       result => {
@@ -69,6 +72,8 @@ export class CourseListComponent implements OnInit {
           setTimeout(() => {
             this.dataSource = new MatTableDataSource(this.ELEMENT_DATA)
             this.dataSource.paginator = this.paginator;
+            this.spinner = false;
+
           }, 1500)
         }
       }

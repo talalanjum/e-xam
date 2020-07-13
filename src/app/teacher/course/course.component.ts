@@ -1,3 +1,7 @@
+import { ExamService } from './../../services/teacher-services/exam.service';
+import { ExamshareService } from './../../services/teacher-services/examshare.service';
+import { QuizshareService } from './../../services/teacher-services/quizshare.service';
+import { ToastrService } from 'ngx-toastr';
 import { QuizService } from './../../services/teacher-services/quiz.service';
 import { QuestionshareService } from './../../services/teacher-services/questionshare.service';
 import { ContentshareService } from './../../services/teacher-services/contentshare.service';
@@ -23,6 +27,8 @@ export class CourseComponent implements OnInit {
   teacher
   clos = []
   classes = []
+  message
+  spinner
 
   ELEMENT_DATA_content = [];
   displayedColumnsContent: string[] = ['position', 'description', 'classes', 'uploaded_on', 'actions'];
@@ -55,8 +61,34 @@ export class CourseComponent implements OnInit {
   }
 
   ELEMENT_DATA_quiz = []
-  displayedColumnsQuiz: string[] = ['position','quiz_id', 'class_id', 'course_id', 'actions'];
+  displayedColumnsQuiz: string[] = ['position', 'quiz_id', 'class_id', 'course_id', 'actions'];
   dataSourceQuiz
+  quizData = {
+    CLO: "",
+    class_id: "",
+    course_id: "",
+    key: "",
+    questions: "",
+    quiz_id: "",
+    uploaded_by: "",
+    duration: "",
+    datetime: ""
+  }
+
+  ELEMENT_DATA_exam = []
+  displayedColumnsExam: string[] = ['position', 'exam_id', 'class_id', 'course_id', 'actions'];
+  dataSourceExam
+  examData = {
+    CLO: "",
+    class_id: "",
+    course_id: "",
+    key: "",
+    questions: "",
+    exam_id: "",
+    uploaded_by: "",
+    duration: "",
+    datetime: ""
+  }
 
   constructor(
     private courseshare: CourseshareService,
@@ -64,11 +96,14 @@ export class CourseComponent implements OnInit {
     private assignmentsservice: AssignmentsService,
     private questionservice: QuestionService,
     private modalService: NgbModal,
-    private courseservce: TeacherCourseService,
     private router: Router,
     private contentshare: ContentshareService,
     private questionshare: QuestionshareService,
-    private quizservice: QuizService
+    private quizservice: QuizService,
+    private toastr: ToastrService,
+    private quizshare: QuizshareService,
+    private examshare: ExamshareService,
+    private examservice: ExamService
   ) {
     this.modalOptions = {
       backdrop: 'static',
@@ -127,7 +162,12 @@ export class CourseComponent implements OnInit {
   }
 
   contentchange(event) {
-    this.ELEMENT_DATA_content = []
+    this.message = "Fetching Content List.."
+    this.spinner = true
+    if(this.ELEMENT_DATA_content.length !== 0){
+      this.ELEMENT_DATA_content = []
+      this.dataSourceContent._updateChangeSubscription
+    }
     this.contentservice.getContent(this.coursedata.course_code, this.teacher, event.target.value).subscribe(
       result => {
         let position = 1
@@ -144,12 +184,18 @@ export class CourseComponent implements OnInit {
           position++
         }
         this.dataSourceContent = new MatTableDataSource(this.ELEMENT_DATA_content)
+        this.spinner = false
       }
     )
   }
 
   assignmentchange(event) {
-    this.ELEMENT_DATA_assignment = []
+    this.message = "Fetching Assignment List..."
+    this.spinner = true
+    if(this.ELEMENT_DATA_assignment.length !== 0){
+      this.ELEMENT_DATA_assignment = []
+      this.dataSourceAssignment._updateChangeSubscription()
+    }
     this.assignmentsservice.getAssignments(this.coursedata.course_code, this.teacher, event.target.value).subscribe(
       result => {
         let position = 1
@@ -168,15 +214,22 @@ export class CourseComponent implements OnInit {
           position++
         }
         this.dataSourceAssignment = new MatTableDataSource(this.ELEMENT_DATA_assignment)
+        this.spinner = false
       }
     )
   }
 
   deleteContent(content_id, index) {
+    this.message = "Deleting Content..."
+    this.spinner = true
     this.contentservice.deleteContent(content_id).subscribe(
       result => {
         this.dataSourceContent.data.splice(index, 1)
         this.dataSourceContent._updateChangeSubscription()
+        this.spinner = false
+        this.toastr.success('Successfully Deleted Content!', "", {
+          positionClass: "toast-top-center"
+        })
       }
     )
   }
@@ -190,10 +243,16 @@ export class CourseComponent implements OnInit {
   }
 
   deleteAssignment(assignment_id, index) {
+    this.message = "Deleting Assignment..."
+    this.spinner = true
     this.assignmentsservice.deleteAssignment(assignment_id).subscribe(
       result => {
         this.dataSourceAssignment.data.splice(index, 1)
         this.dataSourceAssignment._updateChangeSubscription()
+        this.spinner = false
+        this.toastr.success('Successfully Deleted Assignment!', "", {
+          positionClass: "toast-top-center"
+        })
       }
     )
   }
@@ -207,10 +266,16 @@ export class CourseComponent implements OnInit {
   }
 
   deleteQuestion(_id, index) {
+    this.message = "Deleting Question..."
+    this.spinner = true
     this.questionservice.deleteQuestion(_id).subscribe(
       result => {
         this.dataSourceQuestion.data.splice(index, 1)
         this.dataSourceQuestion._updateChangeSubscription()
+        this.spinner = false
+        this.toastr.success('Successfully Deleted Question!', "", {
+          positionClass: "toast-top-center"
+        })
       }
     )
   }
@@ -268,7 +333,7 @@ export class CourseComponent implements OnInit {
         }
       }
     )
-    this.modalService.open(modal, { centered: true, windowClass: "width: 200px !important;" }).result.then((result) => {
+    this.modalService.open(modal, this.modalOptions).result.then((result) => {
       this.emptyDataFields();
       this.closeResult = `Closed with: ${result}`;
     }, (reason) => {
@@ -293,6 +358,28 @@ export class CourseComponent implements OnInit {
       uploaded_by: "",
       mcq_options: "",
       keywords: ""
+    }
+    this.quizData = {
+      CLO: "",
+      class_id: "",
+      course_id: "",
+      key: "",
+      questions: "",
+      quiz_id: "",
+      uploaded_by: "",
+      duration: "",
+      datetime: ""
+    }
+    this.examData = {
+      CLO: "",
+      class_id: "",
+      course_id: "",
+      key: "",
+      questions: "",
+      exam_id: "",
+      uploaded_by: "",
+      duration: "",
+      datetime: ""
     }
     this.assignmentform.reset()
     this.classes = []
@@ -349,10 +436,16 @@ export class CourseComponent implements OnInit {
   }
 
   updateAssignment(form: NgForm) {
+    this.modalService.dismissAll()
+    this.message = "Updating Assignment..."
+    this.spinner = true
     this.assignmentsservice.updateAssignment(form).subscribe(
       result => {
         this.emptyDataFields()
-        this.modalService.dismissAll()
+        this.spinner = false
+        this.toastr.success('Successfully Updated Assignment!', "", {
+          positionClass: "toast-top-center"
+        })
         this.router.navigate(['teacher/course_menu/list'])
       }
     )
@@ -364,12 +457,12 @@ export class CourseComponent implements OnInit {
       classes: classes
     }
     this.contentshare.changeId(content)
-    this.router.navigate(['teacher/course_menu/edit_content'])
+    this.router.navigate(['teacher/content/update'])
   }
 
   openDetailsQuestion(id, modal) {
-    for(let data of this.ELEMENT_DATA_question){
-      if(data._id == id){
+    for (let data of this.ELEMENT_DATA_question) {
+      if (data._id == id) {
         this.detailsDataQuestion = {
           answer: data.answer,
           course_code: data.course_code,
@@ -379,7 +472,7 @@ export class CourseComponent implements OnInit {
           type: data.type,
           uploaded_by: data.uploaded_by,
           mcq_options: data.mcq_options,
-          keywords : data.keywords
+          keywords: data.keywords
         }
       }
     }
@@ -391,25 +484,151 @@ export class CourseComponent implements OnInit {
     });
   }
 
-  openEditQuestion(id){
-    for(let data of this.ELEMENT_DATA_question){
-      if(data._id == id){
+  openEditQuestion(id) {
+    for (let data of this.ELEMENT_DATA_question) {
+      if (data._id == id) {
         this.questionshare.changeData(data)
         break
       }
     }
-    this.router.navigate(['teacher/course_menu/edit_question'])
+    this.router.navigate(['teacher/question/update'])
   }
 
-  quizclasschange(event){
+  quizclasschange(event) {
+    this.message = "Fetching Quiz's List..."
+    this.spinner = true
+    if (this.ELEMENT_DATA_quiz.length !== 0) {
+      this.ELEMENT_DATA_quiz = []
+      this.dataSourceQuiz._updateChangeSubscription()
+    }
     this.quizservice.getQuizzes(event.target.value, this.coursedata.course_code).subscribe(
-      result=>{
-        console.log(result)
-        // for(let data in result){
-        //   let quiz = result[data]
-        //   this.ELEMENT_DATA_quiz.push(quiz)
-        // }
+      result => {
+        let position = 1
+        for (let data in result) {
+          let quiz = result[data]
+          quiz.position = position
+          this.ELEMENT_DATA_quiz.push(quiz)
+          position++
+        }
+        this.dataSourceQuiz = new MatTableDataSource(this.ELEMENT_DATA_quiz)
+        this.spinner = false
       }
     )
   }
+
+  deleteQuiz(quiz) {
+    this.message = "Deleting Quiz..."
+    this.spinner = true;
+    this.dataSourceQuiz.data.splice(this.dataSourceQuiz.data.indexOf(quiz), 1)
+    this.dataSourceQuiz._updateChangeSubscription()
+    this.quizservice.deleteQuiz(quiz._id).subscribe(
+      result => {
+        if (result) {
+          this.spinner = false;
+          this.toastr.success('Successfully Deleted Quiz!', "", {
+            positionClass: "toast-top-center"
+          })
+        }
+      }
+    )
+  }
+
+  detailsQuiz(quiz, modal) {
+    let date = new Date(quiz.datetime)
+    let strdate = date.toLocaleDateString()
+    let strtime = date.toLocaleTimeString()
+    this.quizData = {
+      CLO: quiz.CLO,
+      class_id: quiz.class_id,
+      course_id: quiz.course_id,
+      key: quiz.key,
+      questions: quiz.questions,
+      quiz_id: quiz.quiz_id,
+      uploaded_by: quiz.uploaded_by,
+      duration: quiz.duration,
+      datetime: strdate + ",    " + strtime
+    }
+    this.modalService.open(modal, { centered: true, windowClass: "width: 200px !important;" }).result.then((result) => {
+      this.emptyDataFields();
+      this.closeResult = `Closed with: ${result}`;
+    }, (reason) => {
+      this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
+    });
+  }
+
+  editQuiz(quiz) {
+    this.quizshare.changeData(quiz)
+    this.router.navigate(['/teacher/quiz/update'])
+  }
+
+
+
+  deleteExam(exam) {
+    this.message = "Deleting Exam..."
+    this.spinner = true;
+    this.dataSourceExam.data.splice(this.dataSourceQuiz.data.indexOf(exam), 1)
+    this.dataSourceExam._updateChangeSubscription()
+    this.examservice.deleteExam(exam._id).subscribe(
+      result => {
+        if (result) {
+          this.spinner = false;
+          this.toastr.success('Successfully Deleted Exam!', "", {
+            positionClass: "toast-top-center"
+          })
+        }
+      }
+    )
+  }
+
+  detailsExam(exam, modal) {
+    let date = new Date(exam.datetime)
+    let strdate = date.toLocaleDateString()
+    let strtime = date.toLocaleTimeString()
+    this.examData = {
+      CLO: exam.CLO,
+      class_id: exam.class_id,
+      course_id: exam.course_id,
+      key: exam.key,
+      questions: exam.questions,
+      exam_id: exam.exam_id,
+      uploaded_by: exam.uploaded_by,
+      duration: exam.duration,
+      datetime: strdate + ",   " + strtime
+    }
+    this.modalService.open(modal, { centered: true, windowClass: "width: 200px !important;" }).result.then((result) => {
+      this.emptyDataFields();
+      this.closeResult = `Closed with: ${result}`;
+    }, (reason) => {
+      this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
+    });
+  }
+
+  editExam(exam) {
+    this.examshare.changeData(exam)
+    this.router.navigate(['/teacher/exam/update'])
+  }
+
+
+  examclasschange(event) {
+    this.message = "Fetching Exam's List..."
+    this.spinner = true
+    if (this.ELEMENT_DATA_exam.length !== 0) {
+      this.ELEMENT_DATA_exam = []
+      this.dataSourceExam._updateChangeSubscription()
+    }
+    this.examservice.getExams(event.target.value, this.coursedata.course_code).subscribe(
+      result => {
+        let position = 1
+        for (let data in result) {
+          let exam = result[data]
+          exam.position = position
+          this.ELEMENT_DATA_exam.push(exam)
+          position++
+        }
+        this.dataSourceExam = new MatTableDataSource(this.ELEMENT_DATA_exam)
+        this.spinner = false
+      }
+    )
+  }
+
 }

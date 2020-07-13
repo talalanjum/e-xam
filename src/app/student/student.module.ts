@@ -22,7 +22,6 @@ import { QuizComponent } from './quiz/quiz.component';
 import { ExamComponent } from './exam/exam.component';
 import { CountdownTimerModule } from 'angular-countdown-timer';
 
-
 @NgModule({
   declarations: [
     StudentFooterComponent,

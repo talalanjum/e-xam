@@ -13,10 +13,14 @@ export class GroupchatComponent implements OnInit {
   messages = []
   message
   currentUser
+  spinner: boolean = false;
+  spinnerMessage
   constructor(
     private groupShare: GroupshareService,
     private chatService: ChatService,
   ) {
+    this.spinnerMessage = "Fetching Messages.."
+    this.spinner = true
     this.groupShare.currentName.subscribe(
       result => {
         this.groupName = result
@@ -34,6 +38,7 @@ export class GroupchatComponent implements OnInit {
           }
           this.messages.push(msg)
         }
+        this.spinner = false
       }
     )
   }

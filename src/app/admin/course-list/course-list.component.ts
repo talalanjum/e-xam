@@ -5,6 +5,7 @@ import { MatTableDataSource, MatPaginator } from '@angular/material';
 import { NgbModalOptions, NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
 import { Router } from '@angular/router';
 import { FormGroup, FormControl, Validators, FormArray } from '@angular/forms';
+import { ToastrService } from 'ngx-toastr';
 
 
 interface PeriodicElement {
@@ -25,7 +26,8 @@ interface PeriodicElement {
 export class CourseListComponent implements OnInit {
   @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
   displayedColumns: string[] = ['position', 'course_code', 'title', 'credit_hours', 'actions'];
-
+  spinner: boolean = false;
+  message
   ELEMENT_DATA: PeriodicElement[] = [];
   dataSource
   closeResult: string;
@@ -43,7 +45,8 @@ export class CourseListComponent implements OnInit {
     private courseService: CourseService,
     private modalService: NgbModal,
     private router: Router,
-    private getdataservice: GetDataService
+    private getdataservice: GetDataService,
+    private toastr: ToastrService
   ) {
     this.modalOptions = {
       backdrop: 'static',
@@ -84,6 +87,8 @@ export class CourseListComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.message = "Fetching List..."
+    this.spinner = true
     this.courseService.getCourses().subscribe(
       result => {
         this.populateTable(result)
@@ -101,6 +106,7 @@ export class CourseListComponent implements OnInit {
     }
     this.dataSource = new MatTableDataSource(this.ELEMENT_DATA);
     this.dataSource.paginator = this.paginator;
+    this.spinner = false
   }
 
 
@@ -180,20 +186,33 @@ export class CourseListComponent implements OnInit {
   }
 
   deleteCourse(id, index) {
+    this.message = "Deleting Course..."
+    this.spinner = true
     let formData = new FormData()
     formData.append('course_code', id)
     this.courseService.deleteCourse(formData).subscribe(
       result => { 
         this.dataSource.data.splice(index, 1)
         this.dataSource._updateChangeSubscription()
+        this.spinner = false
+        this.toastr.success('Successfully Deleted Course!', "", {
+          positionClass: "toast-top-center"
+        })
       }
     )
   }
 
   updateCourse(data) { 
+    this.modalService.dismissAll()
+    this.message = "Updating Course..."
+    this.spinner = true
     this.courseService.updateCourse(data).subscribe(
-      result => { 
+      result => {
         this.emptyDataFields()
+        this.spinner = false
+        this.toastr.success('Successfully Updated Course!', "", {
+          positionClass: "toast-top-center"
+        })
       }
     )
   }
@@ -222,10 +241,13 @@ export class CourseListComponent implements OnInit {
 
   private getDismissReason(reason: any): string {
     if (reason === ModalDismissReasons.ESC) {
+      this.emptyDataFields()
       return 'by pressing ESC';
     } else if (reason === ModalDismissReasons.BACKDROP_CLICK) { 
+      this.emptyDataFields()
       return 'by clicking on a backdrop';
     } else {
+      this.emptyDataFields()
       return `with: ${reason}`;
     }
   }

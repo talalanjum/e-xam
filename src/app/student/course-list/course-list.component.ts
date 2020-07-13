@@ -25,6 +25,8 @@ export class CourseListComponent implements OnInit {
   ELEMENT_DATA: PeriodicElement[] = [];
   displayedColumns: string[] = ['position', 'course_code', 'course_name'];
   dataSource
+  spinner: boolean = false;
+  message
   form = new FormGroup({
     content: new FormControl([])
   })
@@ -41,6 +43,8 @@ export class CourseListComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.message = "Fetching List.."
+    this.spinner = true
     this.courseservice.getCourses().subscribe(
       result => {
         let position = 1
@@ -64,6 +68,7 @@ export class CourseListComponent implements OnInit {
         setTimeout(() => {
           this.dataSource = new MatTableDataSource(this.ELEMENT_DATA)
           this.dataSource.paginator = this.paginator;
+          this.spinner = false
         }, 1500)
       }
     )

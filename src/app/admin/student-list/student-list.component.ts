@@ -1,3 +1,4 @@
+import { ToastrModule, ToastrService } from 'ngx-toastr';
 import { MatTableDataSource, MatPaginator } from '@angular/material';
 import { Router } from '@angular/router';
 import { GetDataService } from './../../services/get-data.service';
@@ -34,6 +35,8 @@ export class StudentListComponent implements OnInit {
   ELEMENT_DATA: PeriodicElement[] = [];
   displayedColumns: string[] = ['position', 'registration_number', 'name', 'department', 'actions'];
   dataSource
+  spinner: boolean = false;
+  message
 
   public samplePagesCollapsed = true;
   user = localStorage.getItem('token');
@@ -58,11 +61,13 @@ export class StudentListComponent implements OnInit {
     courses: []
   };
 
-  constructor(private studentservice: StudentServiceService,
+  constructor(
+    private studentservice: StudentServiceService,
     private modalService: NgbModal,
     private GetDataService: GetDataService,
-    private router: Router,
-    private fb: FormBuilder) {
+    private fb: FormBuilder,
+    private toastr: ToastrService
+    ) {
     this.modalOptions = {
       backdrop: 'static',
       backdropClass: 'customBackdrop',
@@ -103,6 +108,8 @@ export class StudentListComponent implements OnInit {
   }
 
   updateList(batch) {
+    this.message = "Fetching List..."
+    this.spinner = true
     this.studentservice
       .getBatchStudents(batch)
       .subscribe(result => {
@@ -146,6 +153,7 @@ export class StudentListComponent implements OnInit {
     }
     this.dataSource = new MatTableDataSource(this.ELEMENT_DATA);
     this.dataSource.paginator = this.paginator;
+    this.spinner = false
   }
 
   form = this.fb.group({
@@ -249,9 +257,16 @@ export class StudentListComponent implements OnInit {
   }
 
   updateStudent(data) {
+    this.modalService.dismissAll()
+    this.message = "Updating student..."
+    this.spinner = true
     this.studentservice.updateStudent(data)
       .subscribe(result => {
         if (result) {
+          this.spinner = false
+          this.toastr.success('Successfully Updated Student!', "", {
+            positionClass: "toast-top-center"
+          })
         }
         else {
         }
@@ -264,12 +279,17 @@ export class StudentListComponent implements OnInit {
 
 
   deleteStudent(id, index) {
-
+    this.message = "Deleting student..."
+    this.spinner = true
     this.studentservice.deleteStudent(id)
       .subscribe(result => {
         if (result) {
+          this.spinner = false
           this.dataSource.data.splice(index, 1)
           this.dataSource._updateChangeSubscription()
+          this.toastr.success('Successfully Deleted Student!', "", {
+            positionClass: "toast-top-center"
+          })
         }
       },
         err => {

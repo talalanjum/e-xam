@@ -1,15 +1,15 @@
+import { RecommendationService } from './../../services/student-services/recommendation.service';
+import { ExamService } from './../../services/student-services/exam.service';
+import { HttpClient } from '@angular/common/http';
 import { saveAs } from 'file-saver';
 import { Component, OnInit } from '@angular/core';
 import { NgbModalOptions, NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
 import { CourseshareService } from 'src/app/services/student-services/courseshare.service';
-import { ContentService } from 'src/app/services/teacher-services/content.service';
-import { QuestionService } from 'src/app/services/teacher-services/question.service';
-import { TeacherCourseService } from 'src/app/services/teacher-services/course.service';
 import { Router } from '@angular/router';
-import { ContentshareService } from 'src/app/services/teacher-services/contentshare.service';
 import { FormGroup, FormControl, FormArray, Validators, NgForm } from '@angular/forms';
 import { MatTableDataSource } from '@angular/material';
 import { AssignmentService } from 'src/app/services/student-services/assignment.service';
+import { QuizService } from 'src/app/services/student-services/quiz.service';
 
 @Component({
   selector: 'app-course-detail',
@@ -19,25 +19,30 @@ import { AssignmentService } from 'src/app/services/student-services/assignment.
 export class CourseDetailComponent implements OnInit {
 
   coursedata
-  teacher
   clos = []
   classes = []
-  quizName: any;
   showQuestions: boolean = false;
   file
-  ELEMENT_DATA_content = [];
-  displayedColumnsQuizzes: string[] = ['quizNo', 'date', 'time', 'actions'];
-  dataSourceQuizzes = [
-    { quizNo: "1", date: "22-April-20", time: "12:00pm", attempted: true, },
-    { quizNo: "2", date: "2-April-20", time: "12:00pm", attempted: false, }]
+  recommendationResults
+  showRecommendation = false
+  message
+  spinner = false
+  student
+  recommendations
+
+
 
   ELEMENT_DATA_assignment = [];
   displayedColumnsAssignment: string[] = ['position', 'name', 'marks', 'topics', 'due_date', 'actions'];
   dataSourceAssignment
 
-  ELEMENT_DATA_question = [];
-  displayedColumnsQuestion: string[] = ['position', 'question_text', 'type', 'topic', 'actions'];
-  dataSourceQuestion
+  ELEMENT_DATA_quizzes = [];
+  displayedColumnsQuizzes: string[] = ['quiz_id', 'key', 'date', 'time', 'actions'];
+  dataSourceQuizzes
+
+  ELEMENT_DATA_Exams = [];
+  displayedColumnsExams: string[] = ['quiz_id', 'key', 'date', 'time', 'actions'];
+  dataSourceExams
 
   closeResult: string;
   modalOptions: NgbModalOptions;
@@ -46,16 +51,18 @@ export class CourseDetailComponent implements OnInit {
     class_name_uploaded_for: '',
     name: ''
   }
+  quizmessage
+  exammessage
 
   constructor(
     private courseshare: CourseshareService,
-    private contentservice: ContentService,
     private assignmentservice: AssignmentService,
-    private questionservice: QuestionService,
     private modalService: NgbModal,
-    private courseservce: TeacherCourseService,
     private router: Router,
-    private contentshare: ContentshareService
+    private quizservice: QuizService,
+    private examservice: ExamService,
+    private recommendationservice: RecommendationService,
+    private http: HttpClient
 
   ) {
     this.modalOptions = {
@@ -87,12 +94,17 @@ export class CourseDetailComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.teacher = localStorage.getItem('token')
+    this.message = "Fetching Lists.."
+    this.spinner = true
+    this.student = localStorage.getItem('token')
     this.courseshare.currentData.subscribe(
       result => {
         this.coursedata = result
-        console.log(this.coursedata)
         this.populateAssignments()
+        this.populateQuizzes()
+        this.populateExams()
+        this.populateRecommendations()
+        this.spinner = false
       }
     )
   }
@@ -116,7 +128,7 @@ export class CourseDetailComponent implements OnInit {
             name: result[index].name,
             marks: result[index].marks,
             topics: topic,
-            due_date: result[index].due_date.slice(0,10)
+            due_date: result[index].due_date.slice(0, 10)
           }
           this.ELEMENT_DATA_assignment.push(assignment)
           position++
@@ -126,7 +138,7 @@ export class CourseDetailComponent implements OnInit {
     )
   }
 
-  openUploadModal(id , j, uploadmodal){
+  openUploadModal(id, j, uploadmodal) {
     this.modalService.open(uploadmodal, { centered: true, windowClass: "width: 200px !important;" }).result.then((result) => {
       this.emptyDataFields();
       this.closeResult = `Closed with: ${result}`;
@@ -145,18 +157,82 @@ export class CourseDetailComponent implements OnInit {
     }
   }
 
-  uploadAssignment(value){
+  uploadAssignment(value) {
     console.log(value)
     let form = new FormData()
     form.append('assignment', this.file, this.file.name)
   }
 
   populateQuizzes() {
+    let myDate = new Date()
+    if (this.coursedata.classes) {
+      this.quizservice.getQuizzes(this.coursedata.classes, this.coursedata.course_code).subscribe(
+        result => {
+          let position = 1
+          for (let index in result) {
+            let obj = result[index]
+            obj.position = position
+            let quizDate = new Date(result[index].datetime)
+            obj.quizDate = quizDate
+            let endDate = new Date(quizDate.getTime() + result[index].duration * 60000)
+            if (myDate >= quizDate && myDate <= endDate) {
+              obj.attemptable = 'now'
+            }
+            else if (myDate < quizDate) {
+              obj.attemptable = 'before'
+            }
+            else if (myDate > endDate) {
+              obj.attemptable = 'after'
+            }
+            this.ELEMENT_DATA_quizzes.push(obj)
+            position++
+          }
+          this.dataSourceQuizzes = new MatTableDataSource(this.ELEMENT_DATA_quizzes)
+        }
+      )
+      this.quizservice.getQuizSubmissions(this.coursedata.course_code, this.coursedata.classes).subscribe(
+        result => {
+          console.log(result)
+        }
+      )
 
+    }
+  }
+
+  populateExams() {
+    let myDate = new Date()
+    this.examservice.getExams(this.coursedata.classes, this.coursedata.course_code).subscribe(
+      result => {
+        let position = 1
+        for (let index in result) {
+          let obj = result[index]
+          obj.position = position
+          let examDate = new Date(result[index].datetime)
+          obj.examDate = examDate
+          let endDate = new Date(examDate.getTime() + result[index].duration * 60000)
+          if (myDate >= examDate && myDate <= endDate) {
+            obj.attemptable = 'now'
+          }
+          else if (myDate < examDate) {
+            obj.attemptable = 'before'
+          }
+          else if (myDate > endDate) {
+            obj.attemptable = 'after'
+          }
+          this.ELEMENT_DATA_Exams.push(obj)
+          position++
+        }
+        this.dataSourceExams = new MatTableDataSource(this.ELEMENT_DATA_Exams)
+      }
+    )
   }
 
   populateRecommendations() {
-
+    this.recommendationservice.getRecommendations(this.coursedata.classes, this.coursedata.course_code, this.student).subscribe(
+      result => {
+        this.recommendations = result
+      }
+    )
   }
 
   emptyDataFields() {
@@ -165,6 +241,8 @@ export class CourseDetailComponent implements OnInit {
       class_name_uploaded_for: '',
       name: ''
     }
+    this.quizmessage = ""
+    this.exammessage = ""
     this.assignmentform.reset()
     this.classes = []
     this.clos = []
@@ -189,10 +267,69 @@ export class CourseDetailComponent implements OnInit {
     }
   }
 
-  startQuiz(quiz) {
-    this.quizName = quiz.quizNo;
-    this.showQuestions = true;
-    this.courseshare.setQuiz(quiz);
-    this.router.navigate(['/student/quiz'])
+  startQuiz(quiz, modal) {
+    if (quiz.attemptable === 'before') {
+      this.quizmessage = "Your Quiz will be held on " + quiz.quizDate.toLocaleDateString() + ", at " + quiz.quizDate.toLocaleTimeString()
+      this.modalService.open(modal, { centered: true, windowClass: "width: 200px !important;" }).result.then((result) => {
+        this.emptyDataFields();
+        this.closeResult = `Closed with: ${result}`;
+      }, (reason) => {
+        this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
+      });
+    }
+    else if (quiz.attemptable === 'after') {
+      this.quizmessage = "Your Quiz was held on " + quiz.quizDate.toLocaleDateString() + ", at " + quiz.quizDate.toLocaleTimeString() +
+        ". You have missed the quiz."
+      this.modalService.open(modal, { centered: true, windowClass: "width: 200px !important;" }).result.then((result) => {
+        this.emptyDataFields();
+        this.closeResult = `Closed with: ${result}`;
+      }, (reason) => {
+        this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
+      });
+    }
+    else if (quiz.attemptable === 'now') {
+      this.courseshare.setQuiz(quiz);
+      this.router.navigate(['/student/quiz'])
+    }
   }
+
+  startExam(exam, modal) {
+    if (exam.attemptable === 'before') {
+      this.exammessage = "Your Exam will be held on " + exam.examDate.toLocaleDateString() + ", at " + exam.examDate.toLocaleTimeString()
+      this.modalService.open(modal, { centered: true, windowClass: "width: 200px !important;" }).result.then((result) => {
+        this.emptyDataFields();
+        this.closeResult = `Closed with: ${result}`;
+      }, (reason) => {
+        this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
+      });
+    }
+    else if (exam.attemptable === 'after') {
+      this.exammessage = "Your Exam was held on " + exam.examDate.toLocaleDateString() + ", at " + exam.examDate.toLocaleTimeString() +
+        ". You have missed the Exam."
+      this.modalService.open(modal, { centered: true, windowClass: "width: 200px !important;" }).result.then((result) => {
+        this.emptyDataFields();
+        this.closeResult = `Closed with: ${result}`;
+      }, (reason) => {
+        this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
+      });
+    }
+    else if (exam.attemptable === 'now') {
+      this.courseshare.setExam(exam);
+      this.router.navigate(['/student/exam'])
+    }
+  }
+
+  openRecommendation(item) {
+    this.message = "Fetching results..."
+    this.spinner = true
+    let url = 'https://www.googleapis.com/customsearch/v1?key=AIzaSyBHL4ZUdbOUWWPVnJriRcZA3olx4k8F3Gc&cx=011164081042927830597:x3hk0uq0xqk&q=' + item + '&safe=high';
+    this.http.get(url).subscribe(
+      result => {
+        this.recommendationResults = result['items']
+        this.showRecommendation = true
+        this.spinner = false
+      }
+    )
+  }
+
 }

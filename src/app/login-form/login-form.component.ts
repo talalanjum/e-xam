@@ -14,7 +14,6 @@ import { ToastrService } from 'ngx-toastr';
 export class LoginFormComponent implements OnInit {
   spinner: boolean = false;
   message = "Signing In..";
-  // where is authorization call to api? 
   ngOnInit() {
 
   }
@@ -24,8 +23,7 @@ export class LoginFormComponent implements OnInit {
   constructor(private router: Router,
     private authService: AuthService,
     private toastr: ToastrService
-  ) 
-  {
+  ) {
 
   }
 
@@ -63,13 +61,11 @@ export class LoginFormComponent implements OnInit {
     if (credentials.role == "Admin") {
       this.authService.login(credentials)
         .subscribe(result => {
-          if (result) { 
-            
-           
+          if (result) {
             this.router.navigate(["admin"]);
-            this.toastr.success('Hello world!', 'Toastr fun!', {
-              timeOut: 200000
-            });
+            this.toastr.success('Successfully Logged In!', "", {
+              positionClass: "toast-top-center"
+            })
             this.spinner = false;
           }
           else {
@@ -82,39 +78,41 @@ export class LoginFormComponent implements OnInit {
     }
     if (credentials.role == "Student") {
       this.authService.login(credentials)
-      .subscribe(result => {
-        if (result) {
-          
-          this.router.navigate(["student"]); 
-          this.toastr.success('Hello world!', 'Toastr fun!', {
-            timeOut: 200000
-          });
-          this.spinner = false;
+        .subscribe(result => {
+          if (result) {
+            this.router.navigate(["student"]);
+            this.spinner = false;
+            this.toastr.success('Successfully Logged In!', "", {
+              positionClass: "toast-top-center"
+            })
 
-        }
-        else {
-          this.invalidLogin = true;
-          this.spinner = false;
+          }
+          else {
+            this.invalidLogin = true;
+            this.spinner = false;
 
+          }
         }
-      }
-      );
+        );
     }
     if (credentials.role == "Teacher") {
       this.authService.login(credentials)
-      .subscribe(result => {
-        if (result) {
-          this.router.navigate(["teacher"]);
-          this.spinner = false;
+        .subscribe(result => {
+          if (result) {
+            this.router.navigate(["teacher"]);
+            this.spinner = false;
+            this.toastr.success('Successfully Logged In!', "", {
+              positionClass: "toast-top-center"
+            })
 
-        }
-        else {
-          this.invalidLogin = true;
-          this.spinner = false;
+          }
+          else {
+            this.invalidLogin = true;
+            this.spinner = false;
 
+          }
         }
-      }
-      );
+        );
     }
   }
 

@@ -1,7 +1,9 @@
+import { Router } from '@angular/router';
 import { QuestionService } from './../../services/teacher-services/question.service';
 import { FormGroup, FormArray, FormControl, Validators, NgForm } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
 import { CourseshareService } from 'src/app/services/teacher-services/courseshare.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-add-question',
@@ -12,11 +14,15 @@ export class AddQuestionComponent implements OnInit {
 
   constructor(
     private courseshare: CourseshareService,
-    private questionservice: QuestionService
+    private questionservice: QuestionService,
+    private toastr: ToastrService,
+    private router: Router
   ) { }
   selectedtype
   coursedata
   teacher
+  spinner: boolean = false;
+  message
 
   form: FormGroup
 
@@ -78,9 +84,17 @@ export class AddQuestionComponent implements OnInit {
 
 
   addQuestion(form:NgForm){
+    this.message = "Adding Question..."
+    this.spinner = true
     this.questionservice.addQuestion(form).subscribe(
       result=>{ 
-        console.log(result);
+        if(result){
+          this.spinner = false
+          this.toastr.success('Successfully Added Question!', "", {
+            positionClass: "toast-top-center"
+          })
+          this.router.navigate(['/teacher/course_menu/course'])
+        }
       }
     )
   }

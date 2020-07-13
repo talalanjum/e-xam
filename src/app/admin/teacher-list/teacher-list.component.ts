@@ -1,3 +1,4 @@
+import { ToastrService } from 'ngx-toastr';
 import { TeacherService } from './../../services/admin-services/teacher.service';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatTableDataSource, MatPaginator } from '@angular/material';
@@ -36,6 +37,9 @@ export class TeacherListComponent implements OnInit {
   closeResult: string;
   modalOptions: NgbModalOptions;
 
+  spinner: boolean = false;
+  message
+
   teacherData = {
     _id : "",
     user_id: "",
@@ -52,7 +56,8 @@ export class TeacherListComponent implements OnInit {
   constructor(
     private teacherService: TeacherService,
     private modalService: NgbModal,
-    private router: Router
+    private router: Router,
+    private toastr: ToastrService
   ) { 
     this.modalOptions = {
       backdrop: 'static',
@@ -109,6 +114,8 @@ export class TeacherListComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.message = "Fetching List..."
+    this.spinner = true
     this.teacherService.getTeachers().subscribe(
       result => {
         this.populateTable(result);
@@ -150,6 +157,7 @@ export class TeacherListComponent implements OnInit {
     }
     this.dataSource = new MatTableDataSource(this.ELEMENT_DATA);
     this.dataSource.paginator = this.paginator;
+    this.spinner = false
   }
 
   openEdit(content, id) {
@@ -198,17 +206,32 @@ export class TeacherListComponent implements OnInit {
   }
 
   updateTeacher(data: NgForm) {
+    this.modalService.dismissAll()
+    this.message = "Updating Teacher..."
+    this.spinner = true
     this.teacherService.updateTeacher(data).subscribe(
       result=>{ 
+        if(result){
+          this.spinner = false
+          this.toastr.success('Successfully Updated Teacher!', "", {
+            positionClass: "toast-top-center"
+          })
+        }
       }
     )
   }
 
   deleteTeacher(id, index) {
+    this.message = "Deleting Teacher..."
+    this.spinner = true
     this.teacherService.deleteTeacher(id).subscribe(
       result=>{ 
         this.dataSource.data.splice(index, 1)
         this.dataSource._updateChangeSubscription()
+        this.spinner = false
+        this.toastr.success('Successfully Updated Student!', "", {
+          positionClass: "toast-top-center"
+        })
       }
     )
   }

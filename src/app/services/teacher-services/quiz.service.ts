@@ -19,5 +19,15 @@ export class QuizService {
     return this.http.get(this.url+"teacher/quiz/all/"+class_id+"/"+course_id)
   }
 
+  deleteQuiz(_id){
+    return this.http.delete(this.url+"teacher/quiz/delete/"+_id)
+  }
+
+  updateQuiz(data){
+    return this.http.patch(this.url+"teacher/quiz/update", data)
+  }
+
+  
+
 }
 

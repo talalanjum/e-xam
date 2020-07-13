@@ -14,34 +14,41 @@ export class GroupchatComponent implements OnInit {
   messages = []
   message
   currentUser
+  spinnerMessage
+  spinner: boolean = false;
   constructor(
     private groupShare: GroupshareService,
     private chatService: ChatService,
     private groupService: GroupService
   ) {
+    this.spinnerMessage = "Fetching Messages.."
+    this.spinner = true
     this.groupShare.currentName.subscribe(
       result => {
         this.groupName = result
       }
     )
-    this.chatService.setupSocketConnection(this.groupName)
-    this.chatService.getMessages().subscribe(
-      result => { 
-        this.messages = []
-        for (let message of result.message) {
-          let msg = {
-            sender: message.sender,
-            text: message.text,
-            _id: message._id
+    if (this.groupName) {
+      this.chatService.setupSocketConnection(this.groupName)
+      this.chatService.getMessages().subscribe(
+        result => {
+          this.messages = []
+          for (let message of result.message) {
+            let msg = {
+              sender: message.sender,
+              text: message.text,
+              _id: message._id
+            }
+            this.messages.push(msg)
           }
-          this.messages.push(msg)
+          this.spinner = false
         }
-      }
-    )
+      )
+    }
   }
 
   applyFilter(filterValue: string) {
-    this.messages = this.messages.filter(t=> t == filterValue.trim().toLowerCase())
+    this.messages = this.messages.filter(t => t == filterValue.trim().toLowerCase())
   }
 
   ngOnInit() {
@@ -60,7 +67,7 @@ export class GroupchatComponent implements OnInit {
     this.message = ""
   }
 
-  deleteMessage(_id){ 
+  deleteMessage(_id) {
     this.chatService.deleteMessage(this.groupName, _id)
 
   }

@@ -4,6 +4,7 @@ import { ContentshareService } from './../../services/teacher-services/contentsh
 import { CourseshareService } from './../../services/teacher-services/courseshare.service';
 import { Component, OnInit } from '@angular/core';
 import { ContentService } from 'src/app/services/teacher-services/content.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-content-edit',
@@ -16,15 +17,17 @@ export class ContentEditComponent implements OnInit {
     private courseshare: CourseshareService,
     private contentshare: ContentshareService,
     private contentservice: ContentService,
-    private router: Router
+    private router: Router,
+    private toastr: ToastrService
   ) { }
-
 
   coursedata
   content
   form: FormGroup
   teacher
   classes = []
+  spinner: boolean = false;
+  message
   contentdata = {
     topic: '',
     description: '',
@@ -48,72 +51,84 @@ export class ContentEditComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.message = "Fetching Data..."
+    this.spinner = true
     this.courseshare.currentData.subscribe(res => { this.coursedata = res })
 
     this.contentshare.currentId.subscribe(res => { this.content = res })
 
-    this.teacher = localStorage.getItem('token')
-    this.form = new FormGroup({
-      mapping_CLO: new FormControl('', Validators.required),
-      class_name_uploaded_for: new FormArray([], Validators.required),
-      description: new FormControl('', Validators.required),
-      topic: new FormControl('', Validators.required),
-      content_id: new FormControl(this.content.content_id)
-    }) 
-
-    this.contentservice.getContent(this.coursedata.course_code, this.teacher, this.content.classes[0]).subscribe(
-      result => { 
-        let classchecked
-        for (let cls of this.coursedata.classes) {
-          for (let CLS of result[0]['class_name_uploaded_for']) {
-            if(cls==CLS){
-              classchecked = true
-              break
+    if (this.coursedata && this.content) {
+      this.teacher = localStorage.getItem('token')
+      this.form = new FormGroup({
+        mapping_CLO: new FormControl('', Validators.required),
+        class_name_uploaded_for: new FormArray([], Validators.required),
+        description: new FormControl('', Validators.required),
+        topic: new FormControl('', Validators.required),
+        content_id: new FormControl(this.content.content_id)
+      })
+      this.contentservice.getContent(this.coursedata.course_code, this.teacher, this.content.classes[0]).subscribe(
+        result => {
+          let classchecked
+          for (let cls of this.coursedata.classes) {
+            for (let CLS of result[0]['class_name_uploaded_for']) {
+              if (cls == CLS) {
+                classchecked = true
+                break
+              }
+              else {
+                classchecked = false
+              }
             }
-            else{
-              classchecked = false
+            this.classes.push({
+              name: cls,
+              checked: classchecked
+            })
+          }
+          for (let cls of this.classes) {
+            if (cls.checked) {
+              this.class_name_uploaded_for.push(
+                new FormControl(cls.name)
+              )
             }
           }
-          this.classes.push({
-            name: cls,
-            checked: classchecked
-          })
-        }
-        for(let cls of this.classes){
-          if(cls.checked){
-            this.class_name_uploaded_for.push(
-              new FormControl(cls.name)
-            )
+          this.contentdata = {
+            topic: result[0]['topic'],
+            description: result[0]['description'],
+            mapping_CLO: result[0]['mapping_CLO']
           }
+          this.spinner = false
         }
-        this.contentdata = {
-          topic: result[0]['topic'],
-          description: result[0]['description'],
-          mapping_CLO: result[0]['mapping_CLO']
-        }
-      }
-    )
+      )
+    }
   }
 
-  oncheckchange(event){
-    if(event.checked){
+  oncheckchange(event) {
+    if (event.checked) {
       this.class_name_uploaded_for.push(
         new FormControl(event.source.value)
       )
     }
     else {
-      for(let control of this.class_name_uploaded_for.controls){
-        if(control.value==event.source.value){
+      for (let control of this.class_name_uploaded_for.controls) {
+        if (control.value == event.source.value) {
           this.class_name_uploaded_for.removeAt(this.class_name_uploaded_for.controls.indexOf(control))
         }
       }
     }
   }
 
-  updateContent(data:NgForm){ 
+  updateContent(data: NgForm) {
+    this.message = "Updating Content..."
+    this.spinner = true
     this.contentservice.updateContent(data).subscribe(
-      result=>{ 
-        this.router.navigate(['teacher/course_menu/course'])
+      result => {
+        if(result){
+          this.spinner = false
+          this.toastr.success('Successfully Updated Content!', "", {
+            positionClass: "toast-top-center"
+          })
+          this.router.navigate(['teacher/course_menu/course'])
+        }
       }
     )
   }

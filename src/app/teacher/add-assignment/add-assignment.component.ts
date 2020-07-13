@@ -1,3 +1,4 @@
+import { Router } from '@angular/router';
 import { GroupService } from './../../services/teacher-services/group.service';
 
 import { AssignmentsService } from './../../services/teacher-services/assignments.service';
@@ -5,6 +6,7 @@ import { FormGroup, FormControl, FormArray, Validators } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
 import { CourseshareService } from 'src/app/services/teacher-services/courseshare.service';
 import { ChatService } from 'src/app/services/teacher-services/chat.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-add-assignment',
@@ -18,6 +20,8 @@ export class AddAssignmentComponent implements OnInit {
     private assignmentsservice: AssignmentsService,
     private groupservice: GroupService,
     private chatService: ChatService,
+    private toastr: ToastrService,
+    private router: Router
   ) { }
 
   teacher
@@ -25,6 +29,8 @@ export class AddAssignmentComponent implements OnInit {
   file
   form: FormGroup
   groups = []
+  spinner: boolean = false;
+  message
   ngOnInit() {
     this.courseshare.currentData.subscribe(
       res => {
@@ -81,6 +87,8 @@ export class AddAssignmentComponent implements OnInit {
   }
 
   addAssignment() {
+    this.message = "Adding Assignment..."
+    this.spinner = true
     if (this.group_to_notify.touched) {
       this.chatService.setupSocketConnection(this.group_to_notify.value)
       let obj = {
@@ -103,6 +111,13 @@ export class AddAssignmentComponent implements OnInit {
     form.set('content', this.file, this.file.name)
     this.assignmentsservice.addAssignment(form).subscribe(
       result => { 
+        if(result){
+          this.spinner = false
+          this.toastr.success('Successfully Added Assignment!', "", {
+            positionClass: "toast-top-center"
+          })
+          this.router.navigate(['/teacher/course_menu/course'])
+        }
       }
     )
   }

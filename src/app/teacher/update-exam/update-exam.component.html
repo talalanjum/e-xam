@@ -1,77 +1,19 @@
-<div class="row">
+<div class="row" *ngIf="examData!='default' && enableRender == true">
     <div class="col-12 grid-margin">
         <div class="card">
             <div class="card-body">
-                <h4 class="card-title">{{coursedata.course_name}}</h4>
-                <form class="form-sample" [formGroup]="form" (ngSubmit)="addQuiz(form.value)">
+                <h4 class="card-title"  >{{courseData.course_name}}</h4>
+                <form class="form-sample" [formGroup]="form" (ngSubmit)="updateExam(form.value)">
                     <p class="card-description">
-                        Add Quiz
+                        Update Exam
                     </p>
-                    <div *ngIf="step==1">
-                        <p class="card-description">
-                            Select questions
-                        </p>
-                        <div class="row">
-                            <table mat-table [dataSource]="dataSourceQuestion" class="col-md-12">
-                                <!-- Position Column -->
-
-                                <ng-container matColumnDef="select">
-                                    <th mat-header-cell *matHeaderCellDef>
-                                        Select
-                                    </th>
-                                    <td mat-cell *matCellDef="let row">
-                                        <mat-checkbox (click)="$event.stopPropagation()"
-                                            (change)="toggleQuestion($event, row)" [checked]="selection.isSelected(row)">
-                                        </mat-checkbox>
-                                    </td>
-                                </ng-container>
-
-                                <ng-container matColumnDef="position">
-                                    <th mat-header-cell *matHeaderCellDef> No. </th>
-                                    <td mat-cell *matCellDef="let element"> {{element.position}} </td>
-                                </ng-container>
-
-                                <ng-container matColumnDef="question_text">
-                                    <th mat-header-cell *matHeaderCellDef> Question </th>
-                                    <td mat-cell *matCellDef="let element"> {{element.question_text}} </td>
-                                </ng-container>
-
-                                <!-- Name Column -->
-                                <ng-container matColumnDef="type">
-                                    <th mat-header-cell *matHeaderCellDef> Type </th>
-                                    <td mat-cell *matCellDef="let element"> {{element.type}} </td>
-                                </ng-container>
-
-                                <ng-container matColumnDef="topic">
-                                    <th mat-header-cell *matHeaderCellDef> Topic </th>
-                                    <td mat-cell *matCellDef="let element"> {{element.topic}} </td>
-                                </ng-container>
-
-                                <tr mat-header-row *matHeaderRowDef="displayedColumnsQuestion"></tr>
-                                <tr mat-row *matRowDef="let row; columns: displayedColumnsQuestion;">
-                                </tr>
-                            </table>
-                        </div>
-                        <div *ngIf="selection.selected.length==0 && questiontoggled" class="alert alert-danger row">
-                            At least one question is required</div>
-                        <div class="row mt-4">
-                            <div class="col-md-6 offset-6">
-                                <div class="form-group row offset-9">
-                                    <button [disabled]="selection.selected.length==0" type="button"
-                                        (click)="toggleSelectStep()" class="btn btn-primary btn-rounded btn-fw">Next
-                                        Step</button>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-                    <div *ngFor="let question of selectedQuestions; let i = index">
-                        <div *ngIf="step==i+2">
+                    <div *ngFor="let item of examData.questions; let i = index">
+                        <div *ngIf="step==i+1">
                             <div class="col-md-6">
                                 <div class="form-group row">
                                     <label class="col-sm-3 col-form-label">Question:</label>
-                                    <div class="col-sm-9 pb-1">
-                                        <label>{{question.question_text}}</label>
+                                    <div *ngIf="item.question != null && item.question != undefined" class="col-sm-9 pb-1">
+                                        <label>{{item.question.question_text}}</label>
                                     </div>
                                 </div>
                             </div>
@@ -79,27 +21,28 @@
                                 <div class="form-group row">
                                     <label class="col-sm-3 col-form-label">Marks:</label>
                                     <div class="col-sm-9 pb-1">
-                                        <input #m type="number" class="form-control" placeholder="Enter Marks" />
+                                        <input #m [value]="item.marks" type="number" class="form-control"
+                                            placeholder="Enter Marks" />
                                     </div>
                                 </div>
                             </div>
                             <div class="row mt-4">
                                 <div class="col-md-6 offset-6">
                                     <div class="form-group row offset-9">
-                                        <button type="button" (click)="toggleMarksStep(question, m.value)"
+                                        <button type="button" (click)="toggleMarksStep(item, m.value)"
                                             class="btn btn-primary btn-rounded btn-fw">Next</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                     <div *ngIf="step==selectedQuestions.length+2">
+                    <div *ngIf="step==examData.questions.length+1">
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group row">
                                     <label class="col-sm-3 col-form-label">Course Code</label>
                                     <div class="col-sm-9 pb-1">
-                                        <label>{{coursedata.course_code}}</label>
+                                        <label>{{courseData.course_code}}</label>
                                     </div>
                                 </div>
                             </div>
@@ -115,11 +58,11 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group row">
-                                    <label class="col-sm-3 col-form-label">Quiz ID</label>
+                                    <label class="col-sm-3 col-form-label">Exam ID</label>
                                     <div class="col-sm-9 pb-1">
-                                        <input type="text" formControlName="quiz_id" class="form-control" />
-                                        <div *ngIf="quiz_id.invalid && quiz_id.touched" class="alert alert-danger">
-                                            Quiz ID is required</div>
+                                        <input type="text" formControlName="exam_id" class="form-control" />
+                                        <div *ngIf="exam_id.invalid && exam_id.touched" class="alert alert-danger">
+                                            Exam ID is required</div>
                                     </div>
                                 </div>
                             </div>
@@ -128,8 +71,8 @@
                                     <label class="col-sm-3 col-form-label">Mapping CLO</label>
                                     <div class="col-sm-9">
                                         <mat-checkbox formArrayName="clo" class="pb-1"
-                                            *ngFor="let clo of coursedata.clos" [checked]="checked" [value]="clo"
-                                            (change)="onCloCheck($event)">
+                                            *ngFor="let clo of courseData.clos" [checked]="examData.CLO.includes(clo)"
+                                            [value]="clo" (change)="onCloCheck($event)">
                                             {{clo}}
                                         </mat-checkbox>
                                         <div class="alert alert-danger" *ngIf="!clo.controls[0] && clotoggled">
@@ -144,7 +87,8 @@
                                     <label class="col-sm-3 col-form-label">Classes</label>
                                     <div class="col-sm-9">
                                         <mat-checkbox formArrayName="class_id" class="pb-1"
-                                            *ngFor="let class of coursedata.classes" [checked]="checked" [value]="class"
+                                            *ngFor="let class of courseData.classes"
+                                            [checked]="examData.class_id.includes(class)" [value]="class"
                                             (change)="onClassCheck($event)">
                                             {{class}}
                                         </mat-checkbox>
@@ -170,13 +114,10 @@
                                     <label class="col-sm-3 col-form-label">Date/Time</label>
                                     <div class="col-sm-9">
                                         <mat-form-field>
-                                            <input matInput [ngxMatDatetimePicker]="picker" placeholder="Choose a date" formControlName="datetime"
+                                            <input matInput [ngxMatDatetimePicker]="picker" formControlName="datetime" placeholder="Choose a date"
                                                [min]="minDate" [max]="maxDate" [disabled]="disabled">
                                             <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-                                            <ngx-mat-datetime-picker #picker [showSpinners]="showSpinners" [showSeconds]="showSeconds"
-                                               [stepHour]="stepHour" [stepMinute]="stepMinute" [stepSecond]="stepSecond"
-                                               [touchUi]="touchUi" [color]="color" [enableMeridian]="enableMeridian" 
-                                               [disableMinute]="disableMinute" [hideTime]="hideTime">
+                                            <ngx-mat-datetime-picker #picker>
                                             </ngx-mat-datetime-picker>
                                          </mat-form-field>
                                         <div class="alert alert-danger" *ngIf="datetime.invalid && datetime.touched">
@@ -199,7 +140,7 @@
                             <div class="col-md-6 offset-6">
                                 <div class="form-group row offset-9">
                                     <button [disabled]="!form.valid" type="submit"
-                                        class="btn btn-primary btn-rounded btn-fw">Add Quiz</button>
+                                        class="btn btn-primary btn-rounded btn-fw">Update Exam</button>
                                 </div>
                             </div>
                         </div>
@@ -222,8 +163,6 @@
             <div class="dot"></div>
             <div class="loading"></div>
         </div>
-
-
     </div>
     <p class="spinner-message">
         {{message}}

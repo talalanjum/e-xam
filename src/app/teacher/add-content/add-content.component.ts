@@ -2,6 +2,8 @@ import { FormGroup, FormControl, Validators, FormArray } from '@angular/forms';
 import { CourseshareService } from './../../services/teacher-services/courseshare.service';
 import { ContentService } from 'src/app/services/teacher-services/content.service';
 import { Component, OnInit } from '@angular/core';
+import { ToastrService } from 'ngx-toastr';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-add-content',
@@ -11,6 +13,8 @@ import { Component, OnInit } from '@angular/core';
 export class AddContentComponent implements OnInit {
 
   form: FormGroup
+  spinner: boolean = false;
+  message
 
   get mapping_CLO(){
     return this.form.get('mapping_CLO')
@@ -37,6 +41,8 @@ export class AddContentComponent implements OnInit {
   constructor(
     private contentservice: ContentService,
     private courseshare: CourseshareService,
+    private toastr: ToastrService,
+    private router: Router
   ) { }
   teacher
   coursedata
@@ -87,6 +93,8 @@ export class AddContentComponent implements OnInit {
   }
 
   addContent(){
+    this.message = "Adding Content..."
+    this.spinner = true
     let form = new FormData()
     form.set('course_code', this.coursedata.course_code)
     form.set('uploaded_by', this.teacher)
@@ -97,6 +105,13 @@ export class AddContentComponent implements OnInit {
     form.set('topic', this.topic.value)
     this.contentservice.addContent(form).subscribe(
       result=>{ 
+        if(result){
+          this.spinner = false
+          this.toastr.success('Successfully Added Content!', "", {
+            positionClass: "toast-top-center"
+          })
+          this.router.navigate(['/teacher/course_menu/course'])
+        }
       }
     )
   }

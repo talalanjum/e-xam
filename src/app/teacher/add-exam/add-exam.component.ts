@@ -1,25 +1,24 @@
+import { ExamService } from './../../services/teacher-services/exam.service';
+import { Component, OnInit } from '@angular/core';
+import { CourseshareService } from 'src/app/services/teacher-services/courseshare.service';
+import { QuestionService } from 'src/app/services/teacher-services/question.service';
 import { ToastrService } from 'ngx-toastr';
-import { QuizService } from './../../services/teacher-services/quiz.service';
-import { QuestionService } from './../../services/teacher-services/question.service';
-import { CourseshareService } from './../../services/teacher-services/courseshare.service';
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
+import { SelectionModel } from '@angular/cdk/collections';
 import { FormArray, FormGroup, FormControl, Validators, NgForm } from '@angular/forms';
 import { MatTableDataSource } from '@angular/material';
-import { SelectionModel } from '@angular/cdk/collections';
-import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-add-quiz',
-  templateUrl: './add-quiz.component.html',
-  styleUrls: ['./add-quiz.component.scss']
+  selector: 'app-add-exam',
+  templateUrl: './add-exam.component.html',
+  styleUrls: ['./add-exam.component.scss']
 })
-export class AddQuizComponent implements OnInit {
-  @ViewChild('picker', {static: true}) picker: any;
-  
+export class AddExamComponent implements OnInit {
+
   constructor(
     private courseshare: CourseshareService,
     private questionservice: QuestionService,
-    private quizservice: QuizService,
+    private examService: ExamService,
     private toastr: ToastrService,
     private router: Router
   ) { }
@@ -36,7 +35,7 @@ export class AddQuizComponent implements OnInit {
   displayedColumnsQuestion: string[] = ['select', 'position', 'question_text', 'type', 'topic'];
   selection = new SelectionModel<any>(true, []);
   message
-  spinner
+  spinner = false
   selectedQuestions = []
 
   get clo() {
@@ -48,8 +47,8 @@ export class AddQuizComponent implements OnInit {
   get questions() {
     return this.form.get('questions') as FormArray
   }
-  get quiz_id() {
-    return this.form.get('quiz_id')
+  get exam_id() {
+    return this.form.get('exam_id')
   }
   get key() {
     return this.form.get('key')
@@ -60,6 +59,7 @@ export class AddQuizComponent implements OnInit {
   get duration() {
     return this.form.get('duration')
   }
+
 
   ngOnInit() {
     this.message = "Fetching List..."
@@ -98,7 +98,7 @@ export class AddQuizComponent implements OnInit {
     )
     this.teacher = localStorage.getItem('token')
     this.form = new FormGroup({
-      quiz_id: new FormControl('', [Validators.required]),
+      exam_id: new FormControl('', [Validators.required]),
       course_id: new FormControl(this.coursedata.course_code),
       class_id: new FormArray([], Validators.required),
       clo: new FormArray([], Validators.required),
@@ -106,7 +106,7 @@ export class AddQuizComponent implements OnInit {
       uploaded_by: new FormControl(this.teacher),
       datetime: new FormControl('', [Validators.required]),
       duration: new FormControl('', [Validators.required]),
-      key: new FormControl('', [Validators.required])
+      key: new FormControl('', Validators.required)
     })
   }
 
@@ -144,22 +144,22 @@ export class AddQuizComponent implements OnInit {
 
   toggleQuestion(event, row) {
     this.questiontoggled = true
-    if(event){
+    if (event) {
       this.selection.toggle(row)
     }
-    else{ 
+    else {
       null
     }
   }
 
-  addQuiz(data: NgForm) {
-    this.message = "Adding Quiz..."
+  addExam(data: NgForm) {
+    this.message = "Adding Exam..."
     this.spinner = true
-    this.quizservice.addQuiz(data).subscribe(
+    this.examService.addExam(data).subscribe(
       result => {
         if (result) {
           this.spinner = false
-          this.toastr.success('Successfully Added Quiz!', "", {
+          this.toastr.success('Successfully Added Exam!', "", {
             positionClass: "toast-top-center"
           })
           this.router.navigate(['/teacher/course_menu/course'])
@@ -170,7 +170,7 @@ export class AddQuizComponent implements OnInit {
 
   toggleSelectStep() {
     this.step++
-    for(let obj of this.selection.selected){
+    for (let obj of this.selection.selected) {
       this.selectedQuestions.push(obj)
     }
   }
@@ -184,5 +184,6 @@ export class AddQuizComponent implements OnInit {
     )
     this.step++
   }
+
 
 }

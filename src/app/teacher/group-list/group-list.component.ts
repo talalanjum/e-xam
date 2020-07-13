@@ -21,6 +21,8 @@ export class GroupListComponent implements OnInit {
   ELEMENT_DATA: PeriodicElement[] = [];
   displayedColumns: string[] = ['position', 'name', 'members'];
   dataSource
+  spinner = false;
+  message = "Getting group data.."
 
 
   constructor(
@@ -34,6 +36,7 @@ export class GroupListComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.spinner = true;
     this.groupService.getGroups().subscribe(
       result=>{
         this.populateTable(result) 
@@ -53,6 +56,7 @@ export class GroupListComponent implements OnInit {
       position++
     }
     this.dataSource = new MatTableDataSource(this.ELEMENT_DATA)
+    this.spinner = false;
   }
 
   navigateGroup(row){

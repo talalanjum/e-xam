@@ -276,17 +276,23 @@
                                         <p>Question Text: {{detailsDataQuestion.question_text}}</p>
                                         <p>Answer: {{detailsDataQuestion.answer}}</p>
                                         <p>Uploaded By: {{detailsDataQuestion.uploaded_by}}</p>
-                                        <div *ngIf="detailsDataQuestion.type == 'MCQ' " class="row" style=" margin-left: inherit;">
+                                        <div *ngIf="detailsDataQuestion.type == 'MCQ' " class="row"
+                                            style=" margin-left: inherit;">
                                             <p style="display: inline;">MCQ
                                                 Options: </p>
                                             <div style="display: inline;">
-                                                <ul *ngFor="let mcq of detailsDataQuestion.mcq_options"><p>{{mcq}}</p> </ul>
+                                                <ul *ngFor="let mcq of detailsDataQuestion.mcq_options">
+                                                    <p>{{mcq}}</p>
+                                                </ul>
                                             </div>
                                         </div>
-                                        <div *ngIf="detailsDataQuestion.type == 'Descriptive' " class="row" style=" margin-left: inherit;">
+                                        <div *ngIf="detailsDataQuestion.type == 'Descriptive' " class="row"
+                                            style=" margin-left: inherit;">
                                             <p style="display: inline;">Keywords: </p>
                                             <div style="display: inline;">
-                                                <ul *ngFor="let keyword of detailsDataQuestion.keywords"><p>{{keyword}}</p> </ul>
+                                                <ul *ngFor="let keyword of detailsDataQuestion.keywords">
+                                                    <p>{{keyword}}</p>
+                                                </ul>
                                             </div>
                                         </div>
                                     </div>
@@ -313,48 +319,87 @@
                             <button class="offset-6 btn btn-primary" [routerLink]="['/teacher/quiz/add']">
                                 Add Quiz</button>
                         </div>
-                        <!-- <div class="row">
-                            <table mat-table [dataSource]="dataSourceContent" class="col-md-12">
+                        <div class="row">
+                            <table mat-table [dataSource]="dataSourceQuiz" class="col-md-12">
                                 <ng-container matColumnDef="position">
                                     <th mat-header-cell *matHeaderCellDef> No. </th>
                                     <td mat-cell *matCellDef="let element"> {{element.position}} </td>
                                 </ng-container>
 
-                                <ng-container matColumnDef="description">
-                                    <th mat-header-cell *matHeaderCellDef> Description </th>
-                                    <td mat-cell *matCellDef="let element"> {{element.description}} </td>
+                                <ng-container matColumnDef="quiz_id">
+                                    <th mat-header-cell *matHeaderCellDef> Quiz ID </th>
+                                    <td mat-cell *matCellDef="let element"> {{element.quiz_id}} </td>
                                 </ng-container>
 
-                                <ng-container matColumnDef="classes">
-                                    <th mat-header-cell *matHeaderCellDef> Classes </th>
-                                    <td mat-cell *matCellDef="let element"> {{element.classes}} </td>
+                                <ng-container matColumnDef="class_id">
+                                    <th mat-header-cell *matHeaderCellDef> Class </th>
+                                    <td mat-cell *matCellDef="let element"> {{element.class_id}} </td>
                                 </ng-container>
 
-                                <ng-container matColumnDef="uploaded_on">
-                                    <th mat-header-cell *matHeaderCellDef> Uploaded On </th>
-                                    <td mat-cell *matCellDef="let element"> {{element.uploaded_on}} </td>
+                                <ng-container matColumnDef="course_id">
+                                    <th mat-header-cell *matHeaderCellDef> Course Code </th>
+                                    <td mat-cell *matCellDef="let element"> {{element.course_id}} </td>
                                 </ng-container>
 
                                 <ng-container matColumnDef="actions">
                                     <th mat-header-cell *matHeaderCellDef> Actions </th>
                                     <td mat-cell *matCellDef="let element; let j = index">
-                                        <i class="fas fa-user-edit p-1 text-success"
-                                            (click)="editContent(element.content_id, element.classes)"
-                                            placement="bottom" ngbTooltip="Edit Content"></i>
-                                        <i class="fas fa-trash text-danger"
-                                            (click)="deleteContent(element.content_id, j)" placement="bottom"
-                                            ngbTooltip="Delete Content"></i>
-                                        <i class="fas fa-info-circle p-1 text-primary"
-                                            (click)="downloadContent(element.content_id)" placement="bottom"
-                                            ngbTooltip="Download Content"></i>
+                                        <i class="fas fa-user-edit p-1 text-success" (click)="editQuiz(element)"
+                                            placement="bottom" ngbTooltip="Edit Quiz"></i>
+                                        <i class="fas fa-trash text-danger" (click)="deleteQuiz(element)"
+                                            placement="bottom" ngbTooltip="Delete Quiz"></i>
+                                        <i class="fas fa-info-circle p-1 text-primary" (click)="detailsQuiz(element, quizdetails)"
+                                            placement="bottom" ngbTooltip="View Details"></i>
                                     </td>
                                 </ng-container>
 
-                                <tr mat-header-row *matHeaderRowDef="displayedColumnsContent"></tr>
-                                <tr class="rowhover" mat-row *matRowDef="let row; columns: displayedColumnsContent;">
+                                <tr mat-header-row *matHeaderRowDef="displayedColumnsQuiz"></tr>
+                                <tr class="rowhover" mat-row *matRowDef="let row; columns: displayedColumnsQuiz;">
                                 </tr>
                             </table>
-                        </div> -->
+                        </div>
+                        <div class="modal-lg">
+                            <ng-template class="modal-lg" #quizdetails let-modal>
+                                <div class="modal-header">
+                                    <h4 class="modal-title" id="modal-basic-title">Details for Quiz</h4>
+                                    <button type="button" class="close" aria-label="Close"
+                                        (click)="modal.dismiss('Cross click')">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body m-3">
+                                    <div>
+                                        <p>Quiz ID: {{quizData.quiz_id}}</p>
+                                        <p>Course Code: {{quizData.course_id}}</p>
+                                        <p>Unique Key: {{quizData.key}}</p>
+                                        <p>Number of Questions: {{quizData.questions.length}}</p>
+                                        <p>Uploaded By: {{quizData.uploaded_by}}</p>
+                                        <p>Duration: {{quizData.duration}}</p>
+                                        <p>Date/Time: {{quizData.datetime}}</p>
+                                        <div class="row" style=" margin-left: inherit;">
+                                            <p style="display: inline;">CLOs: </p>
+                                            <div style="display: inline;">
+                                                <ul *ngFor="let clo of quizData.CLO">
+                                                    <p>{{clo}}</p>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div class="row" style=" margin-left: inherit;">
+                                            <p style="display: inline;">Classes: </p>
+                                            <div style="display: inline;">
+                                                <ul *ngFor="let class of quizData.class_id">
+                                                    <p>{{class}}</p>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-danger"
+                                        (click)="modal.close('Save click')">Close</button>
+                                </div>
+                            </ng-template>
+                        </div>
                     </ng-template>
                 </ngb-tab>
                 <ngb-tab>
@@ -362,11 +407,119 @@
                         Exam
                     </ng-template>
                     <ng-template ngbTabContent>
-                        <p>Under Production
-                        </p>
+                        <div class="row">
+                            <label class="col-md-1 pt-2">Class</label>
+                            <select (change)="examclasschange($event)" class="col-md-3 form-control">
+                                <option disabled selected>Select Class</option>
+                                <option *ngFor="let class of coursedata.classes" [value]="class">{{class}}</option>
+                            </select>
+                            <button class="offset-6 btn btn-primary" [routerLink]="['/teacher/exam/add']">
+                                Add Exam</button>
+                        </div>
+                        <div class="row">
+                            <table mat-table [dataSource]="dataSourceExam" class="col-md-12">
+                                <ng-container matColumnDef="position">
+                                    <th mat-header-cell *matHeaderCellDef> No. </th>
+                                    <td mat-cell *matCellDef="let element"> {{element.position}} </td>
+                                </ng-container>
+
+                                <ng-container matColumnDef="exam_id">
+                                    <th mat-header-cell *matHeaderCellDef> Exam ID </th>
+                                    <td mat-cell *matCellDef="let element"> {{element.exam_id}} </td>
+                                </ng-container>
+
+                                <ng-container matColumnDef="class_id">
+                                    <th mat-header-cell *matHeaderCellDef> Class </th>
+                                    <td mat-cell *matCellDef="let element"> {{element.class_id}} </td>
+                                </ng-container>
+
+                                <ng-container matColumnDef="course_id">
+                                    <th mat-header-cell *matHeaderCellDef> Course Code </th>
+                                    <td mat-cell *matCellDef="let element"> {{element.course_id}} </td>
+                                </ng-container>
+
+                                <ng-container matColumnDef="actions">
+                                    <th mat-header-cell *matHeaderCellDef> Actions </th>
+                                    <td mat-cell *matCellDef="let element; let j = index">
+                                        <i class="fas fa-user-edit p-1 text-success" (click)="editExam(element)"
+                                            placement="bottom" ngbTooltip="Edit Exam"></i>
+                                        <i class="fas fa-trash text-danger" (click)="deleteExam(element)"
+                                            placement="bottom" ngbTooltip="Delete Exam"></i>
+                                        <i class="fas fa-info-circle p-1 text-primary" (click)="detailsExam(element, details)"
+                                            placement="bottom" ngbTooltip="View Details"></i>
+                                    </td>
+                                </ng-container>
+
+                                <tr mat-header-row *matHeaderRowDef="displayedColumnsExam"></tr>
+                                <tr class="rowhover" mat-row *matRowDef="let row; columns: displayedColumnsExam;">
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="modal-lg">
+                            <ng-template class="modal-lg" #details let-modal>
+                                <div class="modal-header">
+                                    <h4 class="modal-title" id="modal-basic-title">Details for Exam</h4>
+                                    <button type="button" class="close" aria-label="Close"
+                                        (click)="modal.dismiss('Cross click')">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body m-3">
+                                    <div>
+                                        <p>Exam ID: {{examData.quiz_id}}</p>
+                                        <p>Course Code: {{examData.course_id}}</p>
+                                        <p>Unique Key: {{examData.key}}</p>
+                                        <p>Number of Questions: {{examData.questions.length}}</p>
+                                        <p>Uploaded By: {{examData.uploaded_by}}</p>
+                                        <p>Duration: {{examData.duration}}</p>
+                                        <p>Date/Time: {{examData.datetime}}</p>
+                                        <div class="row" style=" margin-left: inherit;">
+                                            <p style="display: inline;">CLOs: </p>
+                                            <div style="display: inline;">
+                                                <ul *ngFor="let clo of examData.CLO">
+                                                    <p>{{clo}}</p>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div class="row" style=" margin-left: inherit;">
+                                            <p style="display: inline;">Classes: </p>
+                                            <div style="display: inline;">
+                                                <ul *ngFor="let class of examData.class_id">
+                                                    <p>{{class}}</p>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-danger"
+                                        (click)="modal.close('Save click')">Close</button>
+                                </div>
+                            </ng-template>
+                        </div>
                     </ng-template>
                 </ngb-tab>
             </ngb-tabset>
         </div>
     </div>
+</div>
+<div class="container" class="spinner-wrapper" *ngIf="spinner">
+    <div class="row">
+        <div id="loader">
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="loading"></div>
+        </div>
+
+
+    </div>
+    <p class="spinner-message">
+        {{message}}
+    </p>
 </div>

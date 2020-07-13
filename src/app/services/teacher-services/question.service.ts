@@ -26,4 +26,8 @@ export class QuestionService {
   updateQuestion(data){
     return this.http.patch(this.url+"teacher/question/update", data)
   }
+
+  getQuestion(id){
+    return this.http.get(this.url+"teacher/question/view/"+id)
+  }
 }

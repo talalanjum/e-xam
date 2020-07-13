@@ -1,3 +1,6 @@
+import { UpdateExamComponent } from './update-exam/update-exam.component';
+import { AddExamComponent } from './add-exam/add-exam.component';
+import { UpdateQuizComponent } from './update-quiz/update-quiz.component';
 
 import { AddQuestionComponent } from './add-question/add-question.component';
 import { AddAssignmentComponent } from './add-assignment/add-assignment.component';
@@ -26,11 +29,14 @@ const routes: Routes = [
         { path: 'group_menu/list', component: GroupListComponent },
         { path: 'group_menu/chat', component: GroupchatComponent},
         { path: 'content/add', component: AddContentComponent},
+        { path: 'content/update', component: ContentEditComponent},
         { path: 'assignment/add', component: AddAssignmentComponent},
         { path: 'question/add', component: AddQuestionComponent},
+        { path: 'question/update', component: EditQuestionComponent},
         { path: 'quiz/add', component: AddQuizComponent},
-        { path: 'course_menu/edit_content', component: ContentEditComponent},
-        { path: 'course_menu/edit_question', component: EditQuestionComponent}
+        { path: 'quiz/update', component: UpdateQuizComponent},
+        { path: 'exam/add', component: AddExamComponent},
+        { path: 'exam/update', component: UpdateExamComponent},
       ]
     }]
   },

@@ -30,5 +30,24 @@
             <tr (click)="navigateGroup(row)" class="rowhover" mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
         </table>
     </div>
+</div>
+<div class="container" class="spinner-wrapper" *ngIf="spinner">
+    <div class="row">
+        <div id="loader">
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="loading"></div>
+        </div>
 
+
+    </div>
+    <p class="spinner-message">
+        {{message}}
+    </p>
 </div>
